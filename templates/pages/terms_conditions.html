@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-file-contract text-blue-600 mr-3"></i>
+                Terms and Conditions
+            </h1>
+            <p class="text-gray-600">Last updated: {{ last_updated }}</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-8 prose max-w-none">
+            <h2>1. Agreement to Terms</h2>
+            <p>By accessing and using {{ company_name }}, you accept and agree to be bound by the terms and provision of
+                this agreement.</p>
+
+            <h2>2. Service Description</h2>
+            <p>{{ company_name }} provides AI-powered website generation services. Our platform uses artificial
+                intelligence to create websites based on user prompts and requirements.</p>
+
+            <h2>3. User Accounts</h2>
+            <ul>
+                <li>You must provide accurate, complete, and current information during registration</li>
+                <li>You are responsible for maintaining the security of your account credentials</li>
+                <li>You must notify us immediately of any unauthorized use of your account</li>
+                <li>We reserve the right to suspend or terminate accounts that violate our terms</li>
+            </ul>
+
+            <h2>4. Subscription Plans and Payment</h2>
+            <ul>
+                <li>Free plan users get 2 free website generations</li>
+                <li>Paid plans are billed monthly and provide additional features</li>
+                <li>All payments are processed securely through our payment partners</li>
+                <li>Refunds are provided as per our refund policy (7 days money-back guarantee)</li>
+                <li>We reserve the right to change pricing with 30 days notice</li>
+            </ul>
+
+            <h2>5. Acceptable Use</h2>
+            <p>You agree not to use our service to:</p>
+            <ul>
+                <li>Generate content that is illegal, harmful, or violates any laws</li>
+                <li>Create websites with malicious code or harmful content</li>
+                <li>Infringe on intellectual property rights of others</li>
+                <li>Spam or conduct any fraudulent activities</li>
+                <li>Interfere with or disrupt our services</li>
+            </ul>
+
+            <h2>6. Intellectual Property</h2>
+            <ul>
+                <li>Generated website code and content belong to you</li>
+                <li>Our platform, technology, and AI models remain our property</li>
+                <li>You grant us the right to use your prompts to improve our AI models</li>
+                <li>You must respect third-party intellectual property rights</li>
+            </ul>
+
+            <h2>7. Content and Generated Websites</h2>
+            <ul>
+                <li>You are responsible for the content in your prompts and generated websites</li>
+                <li>We do not review or approve generated content before creation</li>
+                <li>You must ensure your generated websites comply with applicable laws</li>
+                <li>We may remove content that violates our terms</li>
+            </ul>
+
+            <h2>8. Limitation of Liability</h2>
+            <p>{{ company_name }} shall not be liable for any indirect, incidental, special, or consequential damages
+                resulting from the use of our service. Our total liability shall not exceed the amount paid by you for
+                our services.</p>
+
+            <h2>9. Service Availability</h2>
+            <ul>
+                <li>We aim for 99.9% uptime but cannot guarantee uninterrupted service</li>
+                <li>Maintenance windows may be scheduled with advance notice</li>
+                <li>We are not responsible for third-party service disruptions</li>
+            </ul>
+
+            <h2>10. Privacy and Data Protection</h2>
+            <p>Your privacy is important to us. Please review our Privacy Policy to understand how we collect, use, and
+                protect your information.</p>
+
+            <h2>11. Modifications to Service</h2>
+            <p>We reserve the right to modify or discontinue our service (or any part thereof) with or without notice.
+                We shall not be liable to you or any third party for any modification, suspension, or discontinuance of
+                the service.</p>
+
+            <h2>12. Termination</h2>
+            <p>We may terminate or suspend your account and access to our service immediately, without prior notice, for
+                conduct that we believe violates these terms or is harmful to other users, us, or third parties.</p>
+
+            <h2>13. Governing Law</h2>
+            <p>These terms shall be governed by and construed in accordance with the laws of India, without regard to
+                its conflict of law provisions.</p>
+
+            <h2>14. Contact Information</h2>
+            <p>If you have any questions about these Terms and Conditions, please contact us at:</p>
+            <ul>
+                <li>Email: runner.abhi01@gmail.com</li>
+                <li>Phone: 9021100337, 90220330088</li>
+            </ul>
+
+            <h2>15. Changes to Terms</h2>
+            <p>We reserve the right to update these terms at any time. We will notify users of any material changes via
+                email or through our platform.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

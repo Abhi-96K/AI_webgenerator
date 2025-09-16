@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Your Account - AI Website Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 2rem; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: white; padding: 2rem; border: 1px solid #e2e8f0; }
+        .button { display: inline-block; background: #667eea; color: white; padding: 1rem 2rem; text-decoration: none; border-radius: 5px; margin: 1rem 0; }
+        .footer { background: #f8fafc; padding: 1rem; text-align: center; color: #666; border-radius: 0 0 10px 10px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Welcome to AI Website Generator!</h1>
+        </div>
+        
+        <div class="content">
+            <h2>Hi {{ user.first_name|default:user.username }},</h2>
+            
+            <p>Thank you for signing up for AI Website Generator! To complete your registration and start creating amazing websites with AI, please verify your email address.</p>
+            
+            <p>Click the button below to verify your account:</p>
+            
+            <a href="{{ protocol }}://{{ domain }}/auth/verify-email/{{ uid }}/{{ token }}/" class="button">
+                Verify My Account
+            </a>
+            
+            <p>Or copy and paste this link into your browser:</p>
+            <p><a href="{{ protocol }}://{{ domain }}/auth/verify-email/{{ uid }}/{{ token }}/">{{ protocol }}://{{ domain }}/auth/verify-email/{{ uid }}/{{ token }}/</a></p>
+            
+            <p>If you didn't create an account, you can safely ignore this email.</p>
+            
+            <p>Best regards,<br>The AI Website Generator Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 AI Website Generator. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-users text-blue-600 mr-3"></i>
+                About Us
+            </h1>
+            <p class="text-xl text-gray-600">Revolutionizing web development with AI</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white rounded-lg shadow-md p-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Our Mission</h2>
+                <p class="text-gray-600 mb-4">
+                    At {{ company_name }}, we believe that creating beautiful, functional websites should be accessible to everyone. Our AI-powered platform democratizes web development by enabling anyone to generate professional websites with just a simple description.
+                </p>
+                <p class="text-gray-600">
+                    We're passionate about leveraging cutting-edge artificial intelligence to simplify complex processes and empower businesses, entrepreneurs, and creators to establish their online presence effortlessly.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Why Choose Us?</h2>
+                <ul class="space-y-3 text-gray-600">
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-600 mr-3 mt-1"></i>
+                        <span><strong>AI-Powered:</strong> Advanced language models create tailored websites</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-600 mr-3 mt-1"></i>
+                        <span><strong>Fast & Efficient:</strong> Generate websites in under 60 seconds</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-600 mr-3 mt-1"></i>
+                        <span><strong>Complete Ownership:</strong> You get full source code</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-green-600 mr-3 mt-1"></i>
+                        <span><strong>24/7 Support:</strong> We're here to help you succeed</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg p-8 mb-12">
+            <div class="grid md:grid-cols-4 gap-6 text-center">
+                <div>
+                    <div class="text-3xl font-bold mb-2">{{ websites_generated }}+</div>
+                    <div class="text-blue-100">Websites Generated</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold mb-2">1000+</div>
+                    <div class="text-blue-100">Happy Customers</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold mb-2">{{ team_size }}</div>
+                    <div class="text-blue-100">Team Members</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold mb-2">99.9%</div>
+                    <div class="text-blue-100">Uptime</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Our Story -->
+        <div class="bg-white rounded-lg shadow-md p-8 mb-12">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Our Story</h2>
+            <div class="prose max-w-none text-gray-600">
+                <p class="mb-4">
+                    Founded in {{ founded_year }}, {{ company_name }} was born from a simple observation: creating websites was too complex and time-consuming for most people. Our founders, with backgrounds in AI research and web development, saw an opportunity to bridge this gap.
+                </p>
+                <p class="mb-4">
+                    What started as an experimental project to automate website creation has evolved into a comprehensive platform that serves thousands of users worldwide. We've processed millions of requests and helped businesses of all sizes establish their online presence.
+                </p>
+                <p>
+                    Today, we continue to push the boundaries of what's possible with AI in web development, constantly improving our models and expanding our capabilities to serve you better.
+                </p>
+            </div>
+        </div>
+
+        <!-- Team Values -->
+        <div class="grid md:grid-cols-3 gap-6 mb-12">
+            <div class="text-center">
+                <div class="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-rocket text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Innovation</h3>
+                <p class="text-gray-600">We constantly innovate to bring you the latest in AI technology</p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-heart text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Customer First</h3>
+                <p class="text-gray-600">Your success is our priority, and we're here to support you</p>
+            </div>
+
+            <div class="text-center">
+                <div class="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Trust & Security</h3>
+                <p class="text-gray-600">We protect your data and ensure secure, reliable service</p>
+            </div>
+        </div>
+
+        <!-- Contact CTA -->
+        <div class="bg-gray-50 rounded-lg p-8 text-center">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Ready to Get Started?</h3>
+            <p class="text-gray-600 mb-6">Join thousands of users who have already discovered the power of AI website generation</p>
+            <div class="space-x-4">
+                <a href="{% url 'generator:generate' %}" 
+                   class="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-block">
+                    Generate Your Website
+                </a>
+                <a href="{% url 'generator:contact_us' %}" 
+                   class="bg-white text-blue-600 px-8 py-3 rounded-lg border border-blue-600 hover:bg-blue-50 transition-colors inline-block">
+                    Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

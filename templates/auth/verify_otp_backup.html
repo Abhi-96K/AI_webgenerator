@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Verify Your Email - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="auth-container" style="background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); min-height: calc(100vh - 80px); display: flex; align-items: center; justify-content: center; padding: 2rem;">
+    <div class="auth-form" style="max-width: 500px; width: 100%; background: var(--white); border-radius: 20px; box-shadow: var(--shadow-hover); padding: 3rem;">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <div class="mx-auto h-20 w-20 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-envelope-open text-blue-600 text-2xl"></i>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Verify Your Email</h2>
+                <p class="text-gray-600">
+                    We've sent a 6-digit verification code to<br>
+                    <span class="font-semibold text-gray-800">{{ user.email }}</span>
+                </p>
+            </div>
+
+            <!-- Messages -->
+            {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} mb-4 p-4 rounded-lg border">
+                            {% if message.tags == 'error' or message.tags == 'danger' %}
+                                <div class="flex items-center">
+                                    <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                                    <span class="text-red-700">{{ message }}</span>
+                                </div>
+                            {% elif message.tags == 'success' %}
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    <span class="text-green-700">{{ message }}</span>
+                                </div>
+                            {% else %}
+                                <div class="flex items-center">
+                                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                                    <span class="text-blue-700">{{ message }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- OTP Form -->
+            <form method="post" id="otpForm">
+                {% csrf_token %}
+                
+                <div class="mb-6">
+                    <label for="otp" class="block text-sm font-medium text-gray-700 mb-3 text-center">
+                        Enter Verification Code
+                    </label>
+                    
+                    <!-- OTP Input Fields -->
+                    <div class="flex justify-center space-x-3 mb-4">
+                        <input type="text" class="otp-digit w-12 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors" maxlength="1" data-index="0">
+                        <input type="text" class="otp-digit w-12 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors" maxlength="1" data-index="1">
+                        <input type="text" class="otp-digit w-12 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors" maxlength="1" data-index="2">
+                        <input type="text" class="otp-digit w-12 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors" maxlength="1" data-index="3">
+                        <input type="text" class="otp-digit w-12 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors" maxlength="1" data-index="4">
+                        <input type="text" class="otp-digit w-12 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none transition-colors" maxlength="1" data-index="5">
+                    </div>
+                    
+                    <!-- Hidden input for form submission -->
+                    <input type="hidden" name="otp" id="otpHidden">
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="verifyBtn" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    <i class="fas fa-check mr-2"></i>
+                    Verify Email
+                </button>
+            </form>
+
+            <!-- Resend Section -->
+            <div class="mt-6 text-center">
+                <p class="text-gray-600 mb-3">Didn't receive the code?</p>
+                
+                <div class="space-y-3">
+                    <button id="resendBtn" onclick="resendOTP()" class="text-blue-600 hover:text-blue-700 font-semibold transition-colors">
+                        <i class="fas fa-redo mr-1"></i>
+                        Resend Code
+                    </button>
+                    
+                    <div id="resendTimer" class="text-sm text-gray-500 hidden">
+                        Resend available in <span id="countdown">120</span> seconds
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Section -->
+            <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                <div class="flex items-start">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-3 mt-1"></i>
+                    <div>
+                        <p class="text-sm text-gray-700 font-medium mb-2">Tips:</p>
+                        <ul class="text-xs text-gray-600 space-y-1">
+                            <li>• Check your spam/junk folder</li>
+                            <li>• Code expires in 10 minutes</li>
+                            <li>• You have 5 attempts to enter the correct code</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to Register -->
+            <div class="mt-6 text-center">
+                <a href="{% url 'auth:register' %}" class="text-gray-500 hover:text-gray-700 text-sm transition-colors">
+                    <i class="fas fa-arrow-left mr-1"></i>
+                    Back to Registration
+                </a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="text-center mt-8">
+            <p class="text-gray-500 text-sm">
+                Need help? <a href="{% url 'generator:contact_us' %}" class="text-blue-600 hover:underline">Contact Support</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+.alert-danger {
+    background-color: #fef2f2;
+    border-color: #fecaca;
+}
+.alert-success {
+    background-color: #f0fdf4;
+    border-color: #bbf7d0;
+}
+.alert-info {
+    background-color: #eff6ff;
+    border-color: #bfdbfe;
+}
+
+.otp-digit.filled {
+    border-color: #3b82f6;
+    background-color: #eff6ff;
+}
+
+.otp-digit.error {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const otpDigits = document.querySelectorAll('.otp-digit');
+    const otpHidden = document.getElementById('otpHidden');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const resendBtn = document.getElementById('resendBtn');
+    const resendTimer = document.getElementById('resendTimer');
+    const countdown = document.getElementById('countdown');
+    let timeLeft = 120;
+
+    // Focus first input
+    otpDigits[0].focus();
+
+    // Handle OTP input
+    otpDigits.forEach((digit, index) => {
+        digit.addEventListener('input', function(e) {
+            const value = e.target.value;
+            
+            // Only allow digits
+            if (!/^\d$/.test(value) && value !== '') {
+                e.target.value = '';
+                return;
+            }
+            
+            if (value) {
+                e.target.classList.add('filled');
+                // Move to next digit
+                if (index < otpDigits.length - 1) {
+                    otpDigits[index + 1].focus();
+                }
+            } else {
+                e.target.classList.remove('filled');
+            }
+            
+            updateOTPValue();
+        });
+
+        digit.addEventListener('keydown', function(e) {
+            // Handle backspace
+            if (e.key === 'Backspace') {
+                if (!e.target.value && index > 0) {
+                    otpDigits[index - 1].focus();
+                }
+                e.target.classList.remove('filled');
+            }
+            
+            // Handle arrow keys
+            if (e.key === 'ArrowLeft' && index > 0) {
+                otpDigits[index - 1].focus();
+            }
+            if (e.key === 'ArrowRight' && index < otpDigits.length - 1) {
+                otpDigits[index + 1].focus();
+            }
+        });
+
+        digit.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pasteData = e.clipboardData.getData('text');
+            if (/^\d{6}$/.test(pasteData)) {
+                // Fill all digits
+                pasteData.split('').forEach((char, i) => {
+                    if (i < otpDigits.length) {
+                        otpDigits[i].value = char;
+                        otpDigits[i].classList.add('filled');
+                    }
+                });
+                updateOTPValue();
+                otpDigits[5].focus();
+            }
+        });
+    });
+
+    function updateOTPValue() {
+        const otp = Array.from(otpDigits).map(digit => digit.value).join('');
+        otpHidden.value = otp;
+        
+        if (otp.length === 6) {
+            verifyBtn.disabled = false;
+            verifyBtn.classList.remove('disabled:bg-gray-400');
+        } else {
+            verifyBtn.disabled = true;
+            verifyBtn.classList.add('disabled:bg-gray-400');
+        }
+    }
+
+    // Form submission
+    document.getElementById('otpForm').addEventListener('submit', function(e) {
+        const otp = otpHidden.value;
+        if (otp.length !== 6) {
+            e.preventDefault();
+            showError('Please enter all 6 digits');
+            return;
+        }
+        
+        verifyBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Verifying...';
+        verifyBtn.disabled = true;
+    });
+
+    function showError(message) {
+        otpDigits.forEach(digit => {
+            digit.classList.add('error');
+        });
+        
+        // Add shake animation
+        document.querySelector('.flex.justify-center').classList.add('shake');
+        
+        setTimeout(() => {
+            otpDigits.forEach(digit => {
+                digit.classList.remove('error');
+            });
+            document.querySelector('.flex.justify-center').classList.remove('shake');
+        }, 500);
+    }
+
+    // Start countdown timer on page load
+    startCountdown();
+    
+    function startCountdown() {
+        resendBtn.style.display = 'none';
+        resendTimer.classList.remove('hidden');
+        
+        const timer = setInterval(() => {
+            timeLeft--;
+            countdown.textContent = timeLeft;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                resendBtn.style.display = 'inline-block';
+                resendTimer.classList.add('hidden');
+                timeLeft = 120;
+            }
+        }, 1000);
+    }
+});
+
+function resendOTP() {
+    const resendBtn = document.getElementById('resendBtn');
+    resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-1"></i>Sending...';
+    resendBtn.disabled = true;
+    
+    fetch('{% url "auth:resend_otp" %}', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+            'csrfmiddlewaretoken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        })
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.text();
+        }
+        throw new Error('Network response was not ok');
+    })
+    .then(() => {
+        // Reset button
+        resendBtn.innerHTML = '<i class="fas fa-redo mr-1"></i>Resend Code';
+        resendBtn.disabled = false;
+        
+        // Start countdown again
+        startCountdown();
+        
+        // Show success message
+        showMessage('New verification code sent to your email!', 'success');
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        resendBtn.innerHTML = '<i class="fas fa-redo mr-1"></i>Resend Code';
+        resendBtn.disabled = false;
+        showMessage('Failed to resend code. Please try again.', 'error');
+    });
+}
+
+function showMessage(message, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `alert alert-${type} mb-4 p-4 rounded-lg border fixed top-4 right-4 z-50 max-w-sm`;
+    messageDiv.innerHTML = `
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                <i class="fas ${type === 'success' ? 'fa-check-circle text-green-500' : 'fa-exclamation-triangle text-red-500'} mr-2"></i>
+                <span class="${type === 'success' ? 'text-green-700' : 'text-red-700'}">${message}</span>
+            </div>
+            <button onclick="this.parentElement.parentElement.remove()" class="ml-2 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    `;
+    
+    document.body.appendChild(messageDiv);
+    
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        if (messageDiv.parentElement) {
+            messageDiv.remove();
+        }
+    }, 5000);
+}
+
+function startCountdown() {
+    const resendBtn = document.getElementById('resendBtn');
+    const resendTimer = document.getElementById('resendTimer');
+    const countdown = document.getElementById('countdown');
+    let timeLeft = 120;
+    
+    resendBtn.style.display = 'none';
+    resendTimer.classList.remove('hidden');
+    
+    const timer = setInterval(() => {
+        timeLeft--;
+        countdown.textContent = timeLeft;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            resendBtn.style.display = 'inline-block';
+            resendTimer.classList.add('hidden');
+        }
+    }, 1000);
+}
+</script>
+{% endblock %}

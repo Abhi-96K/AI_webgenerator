@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-question-circle text-blue-600 mr-3"></i>
+                Help Center
+            </h1>
+            <p class="text-xl text-gray-600">We're here to help you succeed with AI Website Generator</p>
+        </div>
+
+        <!-- Quick Help Cards -->
+        <div class="grid md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-phone text-3xl text-green-600 mb-4"></i>
+                <h3 class="text-xl font-semibold mb-3">Phone Support</h3>
+                <p class="text-gray-600 mb-4">Call us directly for immediate assistance</p>
+                <div class="space-y-2">
+                    {% for phone in contact_phones %}
+                    <p class="font-mono text-lg">
+                        <a href="tel:{{ phone }}" class="text-blue-600 hover:underline">{{ phone }}</a>
+                    </p>
+                    {% endfor %}
+                </div>
+                <p class="text-sm text-gray-500 mt-3">{{ business_hours }}</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-envelope text-3xl text-blue-600 mb-4"></i>
+                <h3 class="text-xl font-semibold mb-3">Email Support</h3>
+                <p class="text-gray-600 mb-4">Send us your questions via email</p>
+                <p class="font-mono text-lg">
+                    <a href="mailto:{{ contact_email }}" class="text-blue-600 hover:underline">{{ contact_email }}</a>
+                </p>
+                <p class="text-sm text-gray-500 mt-3">Response within {{ response_time }}</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-md p-6 text-center">
+                <i class="fas fa-comments text-3xl text-purple-600 mb-4"></i>
+                <h3 class="text-xl font-semibold mb-3">Live Chat</h3>
+                <p class="text-gray-600 mb-4">Chat with our support team</p>
+                <button class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                    Start Chat
+                </button>
+                <p class="text-sm text-gray-500 mt-3">Available {{ business_hours }}</p>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                <i class="fas fa-question-circle text-blue-600 mr-2"></i>
+                Frequently Asked Questions
+            </h2>
+            <div class="space-y-4">
+                <div class="border-b pb-4">
+                    <h3 class="font-semibold text-lg text-gray-800 mb-2">How do I generate my first website?</h3>
+                    <p class="text-gray-600">Simply sign up, provide a detailed description of your website needs, and
+                        our AI will generate a complete website for you in under a minute!</p>
+                </div>
+                <div class="border-b pb-4">
+                    <h3 class="font-semibold text-lg text-gray-800 mb-2">What's included in the generated website?</h3>
+                    <p class="text-gray-600">You get complete HTML, CSS, and JavaScript files, ready to deploy. All code
+                        is yours to keep and modify.</p>
+                </div>
+                <div class="border-b pb-4">
+                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Can I request specific features?</h3>
+                    <p class="text-gray-600">Absolutely! Use our suggestion box to request new features or improvements
+                        to the platform.</p>
+                </div>
+            </div>
+            <div class="mt-6 text-center">
+                <a href="{% url 'generator:faq' %}" class="text-blue-600 hover:underline font-medium">
+                    View All FAQs →
+                </a>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid md:grid-cols-2 gap-6">
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-100 rounded-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                    <i class="fas fa-lightbulb text-yellow-500 mr-2"></i>
+                    Have a Suggestion?
+                </h3>
+                <p class="text-gray-600 mb-4">Help us improve by sharing your ideas and feedback.</p>
+                <a href="{% url 'generator:suggestion' %}"
+                    class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    Submit Suggestion
+                </a>
+            </div>
+
+            <div class="bg-gradient-to-r from-green-50 to-emerald-100 rounded-lg p-6">
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">
+                    <i class="fas fa-envelope text-green-600 mr-2"></i>
+                    Contact Us Directly
+                </h3>
+                <p class="text-gray-600 mb-4">Send us a message and we'll get back to you promptly.</p>
+                <a href="{% url 'generator:contact_us' %}"
+                    class="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
+                    Contact Us
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

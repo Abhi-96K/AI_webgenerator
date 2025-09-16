@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-shield-alt text-blue-600 mr-3"></i>
+                Privacy Policy
+            </h1>
+            <p class="text-gray-600">Last updated: {{ last_updated }}</p>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-8 prose max-w-none">
+            <h2>1. Information We Collect</h2>
+            <p>We collect information you provide directly to us, such as when you create an account, use our services, or contact us.</p>
+            
+            <h3>Personal Information:</h3>
+            <ul>
+                <li>Name and email address</li>
+                <li>Payment information (processed securely by third parties)</li>
+                <li>Account credentials</li>
+                <li>Contact preferences</li>
+            </ul>
+
+            <h3>Usage Information:</h3>
+            <ul>
+                <li>Website generation prompts and created content</li>
+                <li>Usage patterns and preferences</li>
+                <li>Device and browser information</li>
+                <li>IP address and location data</li>
+            </ul>
+
+            <h2>2. How We Use Your Information</h2>
+            <p>We use the information we collect to:</p>
+            <ul>
+                <li>Provide, maintain, and improve our AI website generation services</li>
+                <li>Process payments and manage your subscription</li>
+                <li>Send you technical notices, updates, and support messages</li>
+                <li>Respond to your comments, questions, and customer service requests</li>
+                <li>Train and improve our AI models (using anonymized data)</li>
+                <li>Protect against fraudulent or illegal activity</li>
+            </ul>
+
+            <h2>3. Information Sharing</h2>
+            <p>We do not sell, trade, or otherwise transfer your personal information to third parties except in the following circumstances:</p>
+            
+            <h3>Service Providers:</h3>
+            <p>We may share information with trusted third-party service providers who assist us in operating our platform, including:</p>
+            <ul>
+                <li>Payment processors (Stripe, PayPal, etc.)</li>
+                <li>Email service providers</li>
+                <li>Cloud hosting services</li>
+                <li>Analytics providers</li>
+            </ul>
+
+            <h3>Legal Requirements:</h3>
+            <p>We may disclose your information when required by law or to protect our rights, property, or safety.</p>
+
+            <h2>4. Data Security</h2>
+            <p>We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. These include:</p>
+            <ul>
+                <li>Encryption of sensitive data in transit and at rest</li>
+                <li>Regular security audits and assessments</li>
+                <li>Access controls and authentication systems</li>
+                <li>Secure data centers with 24/7 monitoring</li>
+            </ul>
+
+            <h2>5. Data Retention</h2>
+            <p>We retain your personal information for as long as your account is active or as needed to provide you services. We may also retain and use your information to comply with legal obligations, resolve disputes, and enforce our agreements.</p>
+
+            <h3>Generated Content:</h3>
+            <ul>
+                <li>Website files are stored for 30 days after generation</li>
+                <li>Account data is retained while your account is active</li>
+                <li>Anonymized usage data may be retained indefinitely for service improvement</li>
+            </ul>
+
+            <h2>6. Your Privacy Rights</h2>
+            <p>Depending on your location, you may have certain rights regarding your personal information:</p>
+            
+            <h3>Access and Portability:</h3>
+            <p>You can request access to your personal information and receive a copy of your data.</p>
+
+            <h3>Correction:</h3>
+            <p>You can update or correct inaccurate personal information through your account settings.</p>
+
+            <h3>Deletion:</h3>
+            <p>You can request deletion of your personal information, subject to certain legal limitations.</p>
+
+            <h3>Opt-out:</h3>
+            <p>You can opt out of marketing communications at any time.</p>
+
+            <h2>7. Cookies and Tracking</h2>
+            <p>We use cookies and similar technologies to:</p>
+            <ul>
+                <li>Remember your preferences and settings</li>
+                <li>Understand how you use our platform</li>
+                <li>Improve our services and user experience</li>
+                <li>Provide security features</li>
+            </ul>
+
+            <p>You can control cookies through your browser settings, but disabling cookies may limit some functionality.</p>
+
+            <h2>8. Third-Party Services</h2>
+            <p>Our platform may integrate with third-party services (OpenAI, Stripe, etc.). These services have their own privacy policies, and we encourage you to review them.</p>
+
+            <h2>9. International Data Transfers</h2>
+            <p>Your information may be transferred to and processed in countries other than your own. We ensure appropriate safeguards are in place to protect your information in accordance with this privacy policy.</p>
+
+            <h2>10. Children's Privacy</h2>
+            <p>Our service is not intended for children under 13. We do not knowingly collect personal information from children under 13. If you believe we have collected information from a child under 13, please contact us immediately.</p>
+
+            <h2>11. Changes to This Policy</h2>
+            <p>We may update this privacy policy from time to time. We will notify you of any material changes by posting the new policy on this page and updating the "last updated" date.</p>
+
+            <h2>12. Contact Us</h2>
+            <p>If you have any questions about this privacy policy or our privacy practices, please contact us at:</p>
+            <ul>
+                <li>Email: {{ contact_email }}</li>
+                <li>Phone: 9021100337, 90220330088</li>
+                <li>Address: Mumbai, Maharashtra, India</li>
+            </ul>
+
+            <h2>13. Data Protection Officer</h2>
+            <p>For privacy-related inquiries, you can contact our Data Protection Officer at {{ contact_email }}.</p>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-8">
+                <p class="text-blue-700 mb-0">
+                    <strong>Questions about your data?</strong> We're committed to transparency and protecting your privacy. 
+                    Don't hesitate to reach out if you need clarification on any aspect of our privacy practices.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

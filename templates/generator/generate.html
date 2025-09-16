@@ -1,0 +1,846 @@
+{% extends 'base.html' %}
+
+{% block title %}Generate Website - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="hero-content">
+        <h1>🚀 Create Your Dream Website</h1>
+        <p>Describe your vision and let AI bring it to life in seconds</p>
+    </div>
+</div>
+
+<section class="generator-section">
+    <div class="container">
+        <h2 class="section-title">Website Generator</h2>
+        
+        <form method="post" class="generator-form" id="generator-form" action="{% url 'generator:generate_api' %}" data-loading="true">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="prompt" class="form-label">
+                    <i class="fas fa-lightbulb"></i>
+                    Describe Your Website
+                </label>
+                <textarea 
+                    name="prompt" 
+                    id="prompt" 
+                    class="form-input"
+                    placeholder="Example: Create a modern landing page for a coffee shop with dark theme, hero section, menu showcase, and contact form. Include animations and make it mobile-responsive."
+                    required
+                    rows="6"
+                    maxlength="1000"
+                ></textarea>
+                <div class="char-counter">
+                    <span id="char-count">0</span>/1000 characters
+                </div>
+                <div class="prompt-help">
+                    <h4><i class="fas fa-tips"></i> Pro Tips:</h4>
+                    <ul>
+                        <li>Be specific about the type of business or website</li>
+                        <li>Mention desired colors, themes, or styles</li>
+                        <li>Include sections you want (hero, about, contact, etc.)</li>
+                        <li>Specify if you want animations or special features</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-palette"></i>
+                    Quick Style Templates
+                </label>
+                <div class="template-grid">
+                    <div class="template-card" data-prompt="Create a modern business landing page with clean design, hero section, services overview, testimonials, and contact form. Use blue and white color scheme.">
+                        <div class="template-preview">
+                            <i class="fas fa-building"></i>
+                        </div>
+                        <h4>Business</h4>
+                        <p>Professional & Clean</p>
+                    </div>
+                    
+                    <div class="template-card" data-prompt="Create a creative portfolio website with dark theme, image gallery, about section, and contact form. Use modern typography and smooth animations.">
+                        <div class="template-preview">
+                            <i class="fas fa-paint-brush"></i>
+                        </div>
+                        <h4>Portfolio</h4>
+                        <p>Creative & Artistic</p>
+                    </div>
+                    
+                    <div class="template-card" data-prompt="Create a restaurant website with warm colors, hero section with food images, menu showcase, location info, and reservation form.">
+                        <div class="template-preview">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <h4>Restaurant</h4>
+                        <p>Warm & Inviting</p>
+                    </div>
+                    
+                    <div class="template-card" data-prompt="Create a tech startup landing page with gradient backgrounds, feature showcase, pricing section, and call-to-action buttons. Use modern and futuristic design.">
+                        <div class="template-preview">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <h4>Tech Startup</h4>
+                        <p>Modern & Futuristic</p>
+                    </div>
+                    
+                    <div class="template-card" data-prompt="Create a blog website with sidebar, article listings, author bio, and newsletter signup. Use clean typography and good readability.">
+                        <div class="template-preview">
+                            <i class="fas fa-blog"></i>
+                        </div>
+                        <h4>Blog</h4>
+                        <p>Clean & Readable</p>
+                    </div>
+                    
+                    <div class="template-card" data-prompt="Create an e-commerce product page with image gallery, product details, reviews section, and add to cart functionality. Use trustworthy and professional design.">
+                        <div class="template-preview">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <h4>E-commerce</h4>
+                        <p>Trustworthy & Professional</p>
+                    </div>
+                </div>
+            </div>
+            
+            {% if not user.is_authenticated %}
+                <div class="auth-notice">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <h4>Sign in to save your generated websites</h4>
+                        <p>Create a free account to access your generated websites anytime and track your creations.</p>
+                        <a href="{% url 'auth:login' %}" class="btn-small btn-primary">Sign In</a>
+                        <a href="{% url 'auth:register' %}" class="btn-small btn-outline">Sign Up</a>
+                    </div>
+                </div>
+            {% else %}
+                <!-- Subscription Status for Authenticated Users -->
+                <div class="subscription-status" id="subscription-status">
+                    {% if profile.subscription_plan == 'free' %}
+                        <div class="status-card {% if can_generate %}status-active{% else %}status-limit{% endif %}">
+                            <div class="status-icon">
+                                {% if can_generate %}
+                                    <i class="fas fa-gift text-blue-600"></i>
+                                {% else %}
+                                    <i class="fas fa-exclamation-triangle text-orange-600"></i>
+                                {% endif %}
+                            </div>
+                            <div class="status-content">
+                                <h4>Free Plan</h4>
+                                {% if can_generate %}
+                                    <p>{{ remaining_websites }} free website{{ remaining_websites|pluralize }} remaining</p>
+                                {% else %}
+                                    <p>You've used all your free websites!</p>
+                                    <p class="upgrade-text">Upgrade to continue creating amazing websites</p>
+                                {% endif %}
+                            </div>
+                            <div class="status-actions">
+                                {% if not can_generate %}
+                                    <a href="{% url 'generator:pricing' %}" class="btn-small btn-primary">
+                                        <i class="fas fa-arrow-up mr-2"></i>Upgrade Now
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'generator:pricing' %}" class="btn-small btn-outline">View Plans</a>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="status-card status-premium">
+                            <div class="status-icon">
+                                <i class="fas fa-crown text-yellow-600"></i>
+                            </div>
+                            <div class="status-content">
+                                <h4>{{ profile.subscription_plan|capfirst }} Plan</h4>
+                                <p>{{ remaining_websites }} website{{ remaining_websites|pluralize }} remaining this month</p>
+                                {% if profile.subscription_expires %}
+                                    <p class="expiry-text">Valid until {{ profile.subscription_expires|date:"M j, Y" }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="status-actions">
+                                <a href="{% url 'generator:subscription_management' %}" class="btn-small btn-outline">
+                                    <i class="fas fa-cog mr-2"></i>Manage
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
+            <button type="submit" class="submit-btn" id="generate-btn">
+                <i class="fas fa-magic"></i>
+                Generate Website
+            </button>
+            
+            <div class="generation-info">
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Average generation time: 10-30 seconds</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-download"></i>
+                    <span>Download as ZIP file with HTML, CSS & JS</span>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Mobile-responsive and modern design</span>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Recent Examples Section -->
+        <div class="examples-section">
+            <h3 class="section-subtitle">
+                <i class="fas fa-star"></i>
+                Recent Community Creations
+            </h3>
+            
+            <div class="examples-grid">
+                <div class="example-card">
+                    <div class="example-preview">
+                        <i class="fas fa-coffee"></i>
+                    </div>
+                    <div class="example-content">
+                        <h4>"Coffee Shop Landing Page"</h4>
+                        <p>Modern café website with menu, location, and online ordering</p>
+                        <div class="example-stats">
+                            <span><i class="fas fa-heart"></i> 124 likes</span>
+                            <span><i class="fas fa-download"></i> 89 downloads</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="example-card">
+                    <div class="example-preview">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="example-content">
+                        <h4>"Photography Portfolio"</h4>
+                        <p>Elegant portfolio with image gallery and contact form</p>
+                        <div class="example-stats">
+                            <span><i class="fas fa-heart"></i> 98 likes</span>
+                            <span><i class="fas fa-download"></i> 67 downloads</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="example-card">
+                    <div class="example-preview">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                    <div class="example-content">
+                        <h4>"Fitness Studio Website"</h4>
+                        <p>Dynamic gym website with class schedules and membership info</p>
+                        <div class="example-stats">
+                            <span><i class="fas fa-heart"></i> 156 likes</span>
+                            <span><i class="fas fa-download"></i> 112 downloads</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.char-counter {
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+}
+
+.prompt-help {
+    background: var(--bg-color);
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-top: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.prompt-help h4 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.prompt-help ul {
+    list-style: none;
+    padding: 0;
+}
+
+.prompt-help li {
+    padding: 0.25rem 0;
+    position: relative;
+    padding-left: 1.5rem;
+}
+
+.prompt-help li::before {
+    content: '✨';
+    position: absolute;
+    left: 0;
+}
+
+.template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.template-card {
+    background: var(--white);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.template-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+}
+
+.template-card.selected {
+    border-color: var(--primary-color);
+    background: rgba(102, 126, 234, 0.05);
+}
+
+.template-preview {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    color: var(--white);
+    font-size: 1.5rem;
+}
+
+.template-card h4 {
+    margin: 0.5rem 0 0.25rem;
+    color: var(--text-color);
+    font-size: 1rem;
+}
+
+.template-card p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.auth-notice {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    padding: 1.5rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.auth-notice i {
+    font-size: 2rem;
+    opacity: 0.9;
+}
+
+.auth-notice h4 {
+    margin: 0 0 0.5rem;
+    color: var(--white);
+}
+
+.auth-notice p {
+    margin: 0 0 1rem;
+    opacity: 0.9;
+}
+
+.auth-notice .btn-small {
+    margin-right: 0.5rem;
+    background: var(--white);
+    color: var(--primary-color);
+    border-color: var(--white);
+}
+
+.auth-notice .btn-outline {
+    background: transparent;
+    color: var(--white);
+    border-color: var(--white);
+}
+
+.generation-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: var(--bg-color);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.info-item i {
+    color: var(--primary-color);
+    width: 20px;
+}
+
+.examples-section {
+    margin-top: 4rem;
+    padding: 2rem 0;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    color: var(--text-color);
+}
+
+.section-subtitle i {
+    color: var(--accent-color);
+    margin-right: 0.5rem;
+}
+
+.examples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.example-card {
+    background: var(--white);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.example-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+
+.example-preview {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.example-content {
+    flex: 1;
+}
+
+.example-content h4 {
+    margin: 0 0 0.5rem;
+    color: var(--text-color);
+}
+
+.example-content p {
+    margin: 0 0 1rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.example-stats {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.example-stats span {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.example-stats i {
+    color: var(--accent-color);
+}
+
+/* Subscription Status Styles */
+.subscription-status {
+    margin: 2rem 0;
+}
+
+.status-card {
+    background: var(--white);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: var(--transition);
+}
+
+.status-card.status-active {
+    border-color: #10B981;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.05), rgba(59, 130, 246, 0.05));
+}
+
+.status-card.status-limit {
+    border-color: #F59E0B;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), rgba(239, 68, 68, 0.05));
+}
+
+.status-card.status-premium {
+    border-color: #8B5CF6;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(236, 72, 153, 0.05));
+}
+
+.status-icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.status-content {
+    flex: 1;
+}
+
+.status-content h4 {
+    margin: 0 0 0.25rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.status-content p {
+    margin: 0.25rem 0;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.upgrade-text {
+    color: #F59E0B !important;
+    font-weight: 500;
+}
+
+.expiry-text {
+    color: #8B5CF6 !important;
+    font-size: 0.8rem;
+}
+
+.status-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.status-actions .btn-small {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+    border: 2px solid;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.status-actions .btn-primary {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.status-actions .btn-primary:hover {
+    background: #4F46E5;
+    border-color: #4F46E5;
+    transform: translateY(-1px);
+}
+
+.status-actions .btn-outline {
+    background: transparent;
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.status-actions .btn-outline:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+    .template-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .generation-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .examples-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .example-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .auth-notice {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const promptTextarea = document.getElementById('prompt');
+    const charCount = document.getElementById('char-count');
+    const templateCards = document.querySelectorAll('.template-card');
+    
+    // Character counter
+    if (promptTextarea && charCount) {
+        promptTextarea.addEventListener('input', function() {
+            const count = this.value.length;
+            charCount.textContent = count;
+            
+            if (count > 900) {
+                charCount.style.color = '#dc3545';
+            } else if (count > 700) {
+                charCount.style.color = '#ffc107';
+            } else {
+                charCount.style.color = '';
+            }
+        });
+    }
+    
+    // Template selection
+    templateCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const prompt = this.dataset.prompt;
+            if (promptTextarea) {
+                promptTextarea.value = prompt;
+                promptTextarea.dispatchEvent(new Event('input'));
+                
+                // Visual feedback
+                templateCards.forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+                
+                // Scroll to form
+                promptTextarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                setTimeout(() => {
+                    promptTextarea.focus();
+                }, 500);
+            }
+        });
+    });
+    
+    // Enhanced form submission with subscription handling
+    const generatorForm = document.getElementById('generator-form');
+    const generateBtn = document.getElementById('generate-btn');
+    
+    if (generatorForm) {
+        generatorForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            
+            // Disable button and show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    if (data.upgrade_required) {
+                        // Show upgrade modal or redirect to pricing
+                        showUpgradeModal(data.error, data.redirect_url);
+                    } else {
+                        showErrorNotification(data.error);
+                    }
+                } else if (data.redirect_url) {
+                    // Redirect to result page
+                    window.location.href = data.redirect_url;
+                } else {
+                    showSuccessNotification('Website generated successfully!');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showErrorNotification('An error occurred. Please try again.');
+            })
+            .finally(() => {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-magic"></i> Generate Website';
+            });
+        });
+    }
+    
+    // Utility functions for notifications
+    function showUpgradeModal(message, redirectUrl) {
+        const modal = document.createElement('div');
+        modal.className = 'upgrade-modal';
+        modal.innerHTML = `
+            <div class="modal-overlay">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <i class="fas fa-crown text-yellow-500 text-3xl mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Upgrade Required</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-gray-600 mb-6">${message}</p>
+                        <div class="flex gap-4">
+                            <button onclick="this.closest('.upgrade-modal').remove()" 
+                                    class="btn-outline flex-1 py-3 px-6 rounded-xl font-semibold">
+                                Maybe Later
+                            </button>
+                            <a href="${redirectUrl}" 
+                               class="btn-primary flex-1 py-3 px-6 rounded-xl font-semibold text-center">
+                                View Plans
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Add styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .upgrade-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .modal-overlay {
+                background: rgba(0, 0, 0, 0.8);
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem;
+            }
+            .modal-content {
+                background: white;
+                border-radius: 1rem;
+                padding: 2rem;
+                max-width: 400px;
+                width: 100%;
+                text-align: center;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            }
+        `;
+        
+        document.head.appendChild(style);
+        document.body.appendChild(modal);
+    }
+    
+    function showErrorNotification(message) {
+        createNotification(message, 'error');
+    }
+    
+    function showSuccessNotification(message) {
+        createNotification(message, 'success');
+    }
+    
+    function createNotification(message, type) {
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.innerHTML = `
+            <i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i>
+            <span>${message}</span>
+        `;
+        
+        // Add styles if not already added
+        if (!document.querySelector('#notification-styles')) {
+            const style = document.createElement('style');
+            style.id = 'notification-styles';
+            style.textContent = `
+                .notification {
+                    position: fixed;
+                    top: 2rem;
+                    right: 2rem;
+                    padding: 1rem 1.5rem;
+                    border-radius: 0.5rem;
+                    color: white;
+                    font-weight: 600;
+                    z-index: 10000;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    transform: translateX(100%);
+                    transition: transform 0.3s ease;
+                }
+                .notification-error {
+                    background: #EF4444;
+                }
+                .notification-success {
+                    background: #10B981;
+                }
+                .notification.show {
+                    transform: translateX(0);
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(notification);
+        
+        // Animate in
+        setTimeout(() => notification.classList.add('show'), 100);
+        
+        // Remove after 5 seconds
+        setTimeout(() => {
+            notification.classList.remove('show');
+            setTimeout(() => notification.remove(), 300);
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

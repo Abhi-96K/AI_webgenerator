@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign Up - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <form method="post" class="auth-form" data-loading="true">
+        {% csrf_token %}
+        
+        <div class="auth-title">
+            <i class="fas fa-user-plus"></i>
+            Create Account
+        </div>
+        
+        <p class="auth-subtitle">
+            Join thousands of users creating amazing websites with AI
+        </p>
+        
+        {% if form.errors %}
+            <div class="message message-error">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Please correct the errors below.</span>
+            </div>
+        {% endif %}
+        
+        <div class="form-group">
+            <label for="id_username" class="form-label">
+                <i class="fas fa-user"></i> Username
+            </label>
+            <input 
+                type="text" 
+                name="username" 
+                id="id_username" 
+                class="form-input" 
+                placeholder="Choose a username"
+                required
+                autocomplete="username"
+                value="{{ form.username.value|default:'' }}"
+            >
+            {% if form.username.errors %}
+                <div class="field-error">{{ form.username.errors.0 }}</div>
+            {% endif %}
+            <div class="field-help">
+                <i class="fas fa-info-circle"></i>
+                Choose a unique username (3-30 characters)
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="id_email" class="form-label">
+                <i class="fas fa-envelope"></i> Email Address
+            </label>
+            <input 
+                type="email" 
+                name="email" 
+                id="id_email" 
+                class="form-input" 
+                placeholder="Enter your email address"
+                required
+                autocomplete="email"
+                value="{{ form.email.value|default:'' }}"
+            >
+            {% if form.email.errors %}
+                <div class="field-error">{{ form.email.errors.0 }}</div>
+            {% endif %}
+            <div class="field-help">
+                <i class="fas fa-info-circle"></i>
+                We'll send a verification code to this address
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="id_phone_number" class="form-label">
+                <i class="fas fa-mobile-alt"></i> Phone Number 
+                <span class="badge badge-coming-soon">Coming Soon</span>
+            </label>
+            <input 
+                type="tel" 
+                name="phone_number" 
+                id="id_phone_number" 
+                class="form-input" 
+                placeholder="+1 (555) 123-4567"
+                disabled
+                style="opacity: 0.6; cursor: not-allowed;"
+            >
+            <div class="field-help">
+                <i class="fas fa-construction"></i>
+                Phone verification will be available soon! Currently using email verification.
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="id_first_name" class="form-label">
+                <i class="fas fa-user"></i> First Name
+            </label>
+            <input 
+                type="text" 
+                name="first_name" 
+                id="id_first_name" 
+                class="form-input" 
+                placeholder="Enter your first name"
+                value="{{ form.first_name.value|default:'' }}"
+            >
+            {% if form.first_name.errors %}
+                <div class="field-error">{{ form.first_name.errors.0 }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_last_name" class="form-label">
+                <i class="fas fa-user"></i> Last Name
+            </label>
+            <input 
+                type="text" 
+                name="last_name" 
+                id="id_last_name" 
+                class="form-input" 
+                placeholder="Enter your last name"
+                value="{{ form.last_name.value|default:'' }}"
+            >
+            {% if form.last_name.errors %}
+                <div class="field-error">{{ form.last_name.errors.0 }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_password1" class="form-label">
+                <i class="fas fa-lock"></i> Password
+            </label>
+            <input 
+                type="password" 
+                name="password1" 
+                id="id_password1" 
+                class="form-input" 
+                placeholder="Create a strong password"
+                required
+                autocomplete="new-password"
+            >
+            {% if form.password1.errors %}
+                <div class="field-error">{{ form.password1.errors.0 }}</div>
+            {% endif %}
+            <div class="password-strength" id="password-strength">
+                <div class="strength-bar">
+                    <div class="strength-fill"></div>
+                </div>
+                <span class="strength-text">Enter a password</span>
+            </div>
+        </div>
+        
+        <div class="form-group">
+            <label for="id_password2" class="form-label">
+                <i class="fas fa-lock"></i> Confirm Password
+            </label>
+            <input 
+                type="password" 
+                name="password2" 
+                id="id_password2" 
+                class="form-input" 
+                placeholder="Confirm your password"
+                required
+                autocomplete="new-password"
+            >
+            {% if form.password2.errors %}
+                <div class="field-error">{{ form.password2.errors.0 }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label class="checkbox-label agreement-label">
+                <input type="checkbox" name="terms_agreed" required> 
+                <span class="checkmark"></span>
+                I agree to the <a href="#" target="_blank">Terms of Service</a> 
+                and <a href="#" target="_blank">Privacy Policy</a>
+            </label>
+        </div>
+        
+        <div class="form-group">
+            <label class="checkbox-label">
+                <input type="checkbox" name="newsletter_subscribe"> 
+                <span class="checkmark"></span>
+                Subscribe to our newsletter for updates and tips
+            </label>
+        </div>
+        
+        <button type="submit" class="submit-btn">
+            <i class="fas fa-user-plus"></i>
+            Create My Account
+        </button>
+        
+        <div class="auth-links">
+            Already have an account? 
+            <a href="{% url 'auth:login' %}">Sign in here</a>
+        </div>
+    </form>
+</div>
+
+<style>
+.auth-subtitle {
+    text-align: center;
+    color: var(--text-light);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+
+.field-help {
+    font-size: 0.8rem;
+    color: var(--text-light);
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.field-help i {
+    color: var(--primary-color);
+}
+
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+.strength-bar {
+    height: 4px;
+    background: var(--border-color);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.strength-fill {
+    height: 100%;
+    width: 0%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-text {
+    font-size: 0.8rem;
+    color: var(--text-light);
+}
+
+.strength-weak .strength-fill {
+    width: 25%;
+    background: #dc3545;
+}
+
+.strength-fair .strength-fill {
+    width: 50%;
+    background: #ffc107;
+}
+
+.strength-good .strength-fill {
+    width: 75%;
+    background: #28a745;
+}
+
+.strength-strong .strength-fill {
+    width: 100%;
+    background: #007bff;
+}
+
+.agreement-label {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.agreement-label a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.agreement-label a:hover {
+    text-decoration: underline;
+}
+
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    border-radius: 12px;
+    margin-left: 0.5rem;
+}
+
+.badge-coming-soon {
+    background: linear-gradient(45deg, #fbbf24, #f59e0b);
+    color: white;
+    box-shadow: 0 2px 4px rgba(251, 191, 36, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInput = document.getElementById('id_password1');
+    const strengthContainer = document.getElementById('password-strength');
+    
+    if (passwordInput && strengthContainer) {
+        passwordInput.addEventListener('input', function() {
+            const password = this.value;
+            const strength = calculatePasswordStrength(password);
+            
+            // Remove all strength classes
+            strengthContainer.className = 'password-strength';
+            
+            if (password.length === 0) {
+                strengthContainer.querySelector('.strength-text').textContent = 'Enter a password';
+                return;
+            }
+            
+            // Add appropriate strength class
+            strengthContainer.classList.add(`strength-${strength.level}`);
+            strengthContainer.querySelector('.strength-text').textContent = strength.text;
+        });
+    }
+    
+    function calculatePasswordStrength(password) {
+        let score = 0;
+        
+        // Length check
+        if (password.length >= 8) score += 1;
+        if (password.length >= 12) score += 1;
+        
+        // Character variety
+        if (/[a-z]/.test(password)) score += 1;
+        if (/[A-Z]/.test(password)) score += 1;
+        if (/[0-9]/.test(password)) score += 1;
+        if (/[^a-zA-Z0-9]/.test(password)) score += 1;
+        
+        if (score <= 2) return { level: 'weak', text: 'Weak password' };
+        if (score <= 3) return { level: 'fair', text: 'Fair password' };
+        if (score <= 4) return { level: 'good', text: 'Good password' };
+        return { level: 'strong', text: 'Strong password' };
+    }
+});
+</script>
+{% endblock %}

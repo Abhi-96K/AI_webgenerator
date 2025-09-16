@@ -1,0 +1,383 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Website Generated Successfully - AI Website Generator{% endblock %}
+
+{% block extra_head %}
+<style>
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceIn {
+    0%, 20%, 40%, 60%, 80% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.bounce-in {
+    animation: bounceIn 0.6s ease-out;
+}
+
+.pulse-animation {
+    animation: pulse 2s infinite;
+}
+
+.slide-in-right {
+    animation: slideInRight 0.8s ease-out;
+}
+
+.success-checkmark {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: #4ade80;
+    stroke-miterlimit: 10;
+    margin: 10% auto;
+    box-shadow: inset 0px 0px 0px #4ade80;
+    animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+}
+
+.success-checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #4ade80;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.success-checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes scale {
+    0%, 100% {
+        transform: none;
+    }
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+}
+
+@keyframes fill {
+    100% {
+        box-shadow: inset 0px 0px 0px 30px #4ade80;
+    }
+}
+
+.download-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.glass-effect {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen gradient-bg py-8">
+    <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto">
+            
+            <!-- Success Header with Animation -->
+            <div class="text-center mb-8 fade-in-up">
+                <svg class="success-checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                    <circle class="success-checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                    <path class="success-checkmark__check" fill="none" d="m14.1 27.2l7.1 7.2 16.7-16.8"/>
+                </svg>
+                <h1 class="text-4xl font-bold text-white mb-4 bounce-in">
+                    🎉 Website Generated Successfully!
+                </h1>
+                <p class="text-xl text-white opacity-90">
+                    Your AI-powered website is ready to download
+                </p>
+            </div>
+
+            <!-- Main Result Card -->
+            <div class="glass-effect rounded-2xl p-8 mb-6 slide-in-right">
+                <div class="grid md:grid-cols-2 gap-8">
+                    
+                    <!-- Website Preview -->
+                    <div class="feature-card bg-white rounded-xl p-6 transition-all duration-300">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-globe text-blue-600 mr-2"></i>
+                            Website Preview
+                        </h3>
+                        <div class="bg-gray-100 rounded-lg p-4 mb-4">
+                            <div class="bg-white rounded shadow-sm p-4">
+                                <div class="flex items-center mb-2">
+                                    <div class="w-3 h-3 bg-red-500 rounded-full mr-1"></div>
+                                    <div class="w-3 h-3 bg-yellow-500 rounded-full mr-1"></div>
+                                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="h-2 bg-gray-300 rounded w-3/4"></div>
+                                    <div class="h-2 bg-gray-300 rounded w-1/2"></div>
+                                    <div class="h-2 bg-gray-300 rounded w-2/3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <p><strong>Generated:</strong> {{ generation_time }}s</p>
+                            <p><strong>File Size:</strong> ~{{ file_size|default:"2.5" }} MB</p>
+                            <p><strong>Technologies:</strong> HTML5, CSS3, JavaScript</p>
+                        </div>
+                    </div>
+
+                    <!-- Download Section -->
+                    <div class="feature-card bg-white rounded-xl p-6 transition-all duration-300">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-download text-green-600 mr-2"></i>
+                            Download Your Website
+                        </h3>
+                        
+                        <!-- Direct Download Button -->
+                        <a href="{% url 'generator:download_site' site_id %}" 
+                           class="download-button block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-4 rounded-lg font-semibold text-lg mb-4 transition-all duration-300 pulse-animation"
+                           onclick="trackDownload({{ site_id }})">
+                            <i class="fas fa-cloud-download-alt mr-2"></i>
+                            Download ZIP File
+                        </a>
+
+                        <!-- Alternative Download Options -->
+                        <div class="space-y-2 text-sm">
+                            <p class="text-gray-600">
+                                <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                                Complete website package with all assets
+                            </p>
+                            <p class="text-gray-600">
+                                <i class="fas fa-code text-green-500 mr-2"></i>
+                                Ready-to-deploy HTML, CSS & JS files
+                            </p>
+                            <p class="text-gray-600">
+                                <i class="fas fa-mobile-alt text-purple-500 mr-2"></i>
+                                Mobile-responsive design included
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feature Cards Row -->
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                
+                <!-- What's Included -->
+                <div class="feature-card glass-effect rounded-xl p-6 text-white transition-all duration-300">
+                    <div class="text-center">
+                        <div class="bg-blue-500 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-box-open text-white text-xl"></i>
+                        </div>
+                        <h4 class="font-semibold mb-3">What's Included</h4>
+                        <ul class="text-sm space-y-1 opacity-90">
+                            <li>✓ Complete HTML structure</li>
+                            <li>✓ Responsive CSS styling</li>
+                            <li>✓ Interactive JavaScript</li>
+                            <li>✓ Optimized images</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Next Steps -->
+                <div class="feature-card glass-effect rounded-xl p-6 text-white transition-all duration-300">
+                    <div class="text-center">
+                        <div class="bg-green-500 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-rocket text-white text-xl"></i>
+                        </div>
+                        <h4 class="font-semibold mb-3">Next Steps</h4>
+                        <ul class="text-sm space-y-1 opacity-90">
+                            <li>1. Download the ZIP file</li>
+                            <li>2. Extract all files</li>
+                            <li>3. Upload to your hosting</li>
+                            <li>4. Your site is live!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Need Help -->
+                <div class="feature-card glass-effect rounded-xl p-6 text-white transition-all duration-300">
+                    <div class="text-center">
+                        <div class="bg-purple-500 w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-life-ring text-white text-xl"></i>
+                        </div>
+                        <h4 class="font-semibold mb-3">Need Help?</h4>
+                        <div class="text-sm space-y-2 opacity-90">
+                            <p>📞 9021100337</p>
+                            <p>📞 90220330088</p>
+                            <p>✉️ Support available 24/7</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center space-y-4 fade-in-up">
+                <div class="space-x-4">
+                    <a href="{% url 'generator:generate' %}" 
+                       class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-all duration-300 inline-block">
+                        <i class="fas fa-plus mr-2"></i>
+                        Generate Another Website
+                    </a>
+                    <a href="{% url 'generator:dashboard' %}" 
+                       class="bg-transparent border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-all duration-300 inline-block">
+                        <i class="fas fa-tachometer-alt mr-2"></i>
+                        Go to Dashboard
+                    </a>
+                </div>
+                
+                <!-- Social Share -->
+                <div class="pt-6">
+                    <p class="text-white opacity-75 mb-3">Love our AI Website Generator? Share it!</p>
+                    <div class="space-x-3">
+                        <a href="#" onclick="shareOnTwitter()" class="inline-block bg-blue-400 text-white p-3 rounded-full hover:bg-blue-500 transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" onclick="shareOnFacebook()" class="inline-block bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" onclick="shareOnLinkedIn()" class="inline-block bg-blue-700 text-white p-3 rounded-full hover:bg-blue-800 transition-colors">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function trackDownload(siteId) {
+    // Track download event
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'download', {
+            'event_category': 'Website',
+            'event_label': 'Site ID: ' + siteId,
+            'value': 1
+        });
+    }
+    
+    // Show download started notification
+    showNotification('Download started! Check your downloads folder.', 'success');
+}
+
+function showNotification(message, type) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-lg text-white z-50 ${type === 'success' ? 'bg-green-500' : 'bg-blue-500'}`;
+    notification.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.style.opacity = '0';
+        setTimeout(() => {
+            document.body.removeChild(notification);
+        }, 300);
+    }, 3000);
+}
+
+function shareOnTwitter() {
+    const text = "Just created an amazing website with AI Website Generator! 🚀 #AIWebsite #WebDev";
+    const url = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(text);
+    window.open(url, '_blank', 'width=600,height=400');
+}
+
+function shareOnFacebook() {
+    const url = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(window.location.href);
+    window.open(url, '_blank', 'width=600,height=400');
+}
+
+function shareOnLinkedIn() {
+    const url = "https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(window.location.href);
+    window.open(url, '_blank', 'width=600,height=400');
+}
+
+// Add some interactive effects
+document.addEventListener('DOMContentLoaded', function() {
+    // Add hover effects to feature cards
+    const featureCards = document.querySelectorAll('.feature-card');
+    featureCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px) scale(1.02)';
+        });
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+    
+    // Auto-scroll to download section after 2 seconds
+    setTimeout(() => {
+        const downloadSection = document.querySelector('.download-button');
+        if (downloadSection) {
+            downloadSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, 2000);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Subscription Management - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-cog text-blue-600 mr-3"></i>
+                Subscription Management
+            </h1>
+            <p class="text-xl text-gray-600">Manage your subscription and billing information</p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Current Plan Card -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Current Plan</h2>
+                        {% if subscription_active %}
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">Active</span>
+                        {% else %}
+                            <span class="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm font-medium">Free Plan</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-6 mb-6">
+                        <div class="text-center p-4 bg-blue-50 rounded-xl">
+                            <div class="text-3xl font-bold text-blue-600 mb-2">{{ profile.subscription_plan|capfirst }}</div>
+                            <p class="text-sm text-blue-700">Current Plan</p>
+                        </div>
+                        <div class="text-center p-4 bg-green-50 rounded-xl">
+                            <div class="text-3xl font-bold text-green-600 mb-2">{{ websites_remaining }}</div>
+                            <p class="text-sm text-green-700">Websites Remaining</p>
+                        </div>
+                        <div class="text-center p-4 bg-purple-50 rounded-xl">
+                            <div class="text-3xl font-bold text-purple-600 mb-2">{{ websites_this_month }}</div>
+                            <p class="text-sm text-purple-700">Used This Month</p>
+                        </div>
+                    </div>
+
+                    {% if subscription_active %}
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-semibold text-blue-800">Subscription Expires</h3>
+                                    <p class="text-blue-600">{{ profile.subscription_expires|date:"F j, Y" }}</p>
+                                    <p class="text-sm text-blue-600">{{ days_remaining }} days remaining</p>
+                                </div>
+                                <i class="fas fa-calendar-alt text-blue-600 text-2xl"></i>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="flex flex-wrap gap-4">
+                        {% if profile.subscription_plan == 'free' %}
+                            <a href="{% url 'generator:pricing' %}" 
+                               class="flex-1 bg-blue-600 text-white py-3 px-6 rounded-xl font-semibold text-center hover:bg-blue-700 transition-colors">
+                                <i class="fas fa-arrow-up mr-2"></i>
+                                Upgrade Plan
+                            </a>
+                        {% else %}
+                            <a href="{% url 'generator:pricing' %}" 
+                               class="bg-green-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-green-700 transition-colors">
+                                <i class="fas fa-sync-alt mr-2"></i>
+                                Change Plan
+                            </a>
+                            <button onclick="cancelSubscription()" 
+                                    class="bg-red-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-red-700 transition-colors">
+                                <i class="fas fa-times mr-2"></i>
+                                Cancel Subscription
+                            </button>
+                        {% endif %}
+                        
+                        <a href="{% url 'generator:generate' %}" 
+                           class="bg-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-purple-700 transition-colors">
+                            <i class="fas fa-plus mr-2"></i>
+                            Generate Website
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Payment History -->
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <div class="flex items-center justify-between mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800">Payment History</h2>
+                        <i class="fas fa-history text-gray-400 text-xl"></i>
+                    </div>
+                    
+                    {% if recent_payments %}
+                        <div class="space-y-4">
+                            {% for payment in recent_payments %}
+                                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-xl">
+                                    <div>
+                                        <div class="font-semibold text-gray-800">₹{{ payment.amount }}</div>
+                                        <div class="text-sm text-gray-600">
+                                            {{ payment.subscription_plan|capfirst }} Plan - {{ payment.created_at|date:"M j, Y" }}
+                                        </div>
+                                        <div class="text-xs text-gray-500">
+                                            Transaction ID: {{ payment.transaction_id }}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        {% if payment.status == 'completed' %}
+                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                                                <i class="fas fa-check-circle mr-1"></i>Completed
+                                            </span>
+                                        {% elif payment.status == 'pending' %}
+                                            <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                                                <i class="fas fa-clock mr-1"></i>Pending
+                                            </span>
+                                        {% elif payment.status == 'failed' %}
+                                            <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                                                <i class="fas fa-times-circle mr-1"></i>Failed
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <i class="fas fa-receipt text-gray-300 text-4xl mb-4"></i>
+                            <p class="text-gray-600">No payment history yet</p>
+                            <p class="text-sm text-gray-500 mt-2">Your payment transactions will appear here</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">
+                        <i class="fas fa-chart-line text-green-600 mr-2"></i>
+                        Your Stats
+                    </h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Total Websites</span>
+                            <span class="font-semibold text-gray-800">{{ profile.websites_generated }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Member Since</span>
+                            <span class="font-semibold text-gray-800">{{ user.date_joined|date:"M Y" }}</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Plan Status</span>
+                            {% if subscription_active %}
+                                <span class="font-semibold text-green-600">Active</span>
+                            {% else %}
+                                <span class="font-semibold text-gray-600">Free</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Plan Benefits -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">
+                        <i class="fas fa-star text-yellow-500 mr-2"></i>
+                        Plan Benefits
+                    </h3>
+                    
+                    {% if profile.subscription_plan == 'free' %}
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>2 free websites</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Basic AI models</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Community support</li>
+                        </ul>
+                    {% elif profile.subscription_plan == 'basic' %}
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>10 websites/month</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Advanced AI models</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Email support</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Premium templates</li>
+                        </ul>
+                    {% elif profile.subscription_plan == 'premium' %}
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>50 websites/month</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>All AI models</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Priority support</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>All templates</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>SEO optimization</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>API access</li>
+                        </ul>
+                    {% elif profile.subscription_plan == 'enterprise' %}
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Unlimited websites</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>All premium features</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>24/7 support</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>White-label option</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>API access</li>
+                            <li class="flex items-center"><i class="fas fa-check text-green-500 mr-2"></i>Bulk generation</li>
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Support -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">
+                        <i class="fas fa-headset text-blue-600 mr-2"></i>
+                        Need Help?
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <a href="{% url 'generator:help_center' %}" 
+                           class="block text-blue-600 hover:underline text-sm">
+                            <i class="fas fa-question-circle mr-2"></i>Help Center
+                        </a>
+                        <a href="{% url 'generator:contact_us' %}" 
+                           class="block text-blue-600 hover:underline text-sm">
+                            <i class="fas fa-envelope mr-2"></i>Contact Support
+                        </a>
+                        <a href="{% url 'generator:faq' %}" 
+                           class="block text-blue-600 hover:underline text-sm">
+                            <i class="fas fa-info-circle mr-2"></i>FAQ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Subscription Modal -->
+<div id="cancelModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl p-8 max-w-md mx-4">
+        <div class="text-center mb-6">
+            <i class="fas fa-exclamation-triangle text-red-500 text-4xl mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">Cancel Subscription?</h3>
+            <p class="text-gray-600">Are you sure you want to cancel your subscription? You'll lose access to premium features at the end of your billing period.</p>
+        </div>
+        
+        <div class="flex space-x-4">
+            <button onclick="closeCancelModal()" 
+                    class="flex-1 bg-gray-200 text-gray-800 py-3 rounded-xl font-semibold hover:bg-gray-300 transition-colors">
+                Keep Subscription
+            </button>
+            <form method="post" action="{% url 'generator:cancel_subscription' %}" class="flex-1">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="w-full bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition-colors">
+                    Cancel Now
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function cancelSubscription() {
+    document.getElementById('cancelModal').classList.remove('hidden');
+    document.getElementById('cancelModal').classList.add('flex');
+}
+
+function closeCancelModal() {
+    document.getElementById('cancelModal').classList.add('hidden');
+    document.getElementById('cancelModal').classList.remove('flex');
+}
+
+// Close modal when clicking outside
+document.getElementById('cancelModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCancelModal();
+    }
+});
+</script>
+{% endblock %}

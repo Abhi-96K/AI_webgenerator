@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if payment_successful %}Payment Success{% else %}Payment Issue{% endif %} - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        {% if payment_successful %}
+            <!-- Success State -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mb-6">
+                    <i class="fas fa-check text-4xl text-green-600"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-gray-800 mb-4">🎉 Welcome to {{ plan_name|default:"Premium" }}!</h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    {% if already_processed %}
+                        Your subscription is already active and ready to use.
+                    {% else %}
+                        Your payment has been processed successfully and your subscription is now active.
+                    {% endif %}
+                </p>
+            </div>
+
+            <!-- Payment Details Card -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">
+                    <i class="fas fa-receipt text-blue-600 mr-3"></i>
+                    Payment Details
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-8 mb-6">
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span class="text-gray-600">Plan</span>
+                            <span class="font-semibold text-gray-800">{{ plan_name|default:"Premium Plan" }}</span>
+                        </div>
+                        {% if amount_paid %}
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span class="text-gray-600">Amount Paid</span>
+                            <span class="font-semibold text-green-600">₹{{ amount_paid }}</span>
+                        </div>
+                        {% endif %}
+                        {% if transaction_id %}
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span class="text-gray-600">Transaction ID</span>
+                            <span class="font-mono text-sm text-gray-700">{{ transaction_id }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="space-y-4">
+                        {% if websites_included %}
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span class="text-gray-600">Websites Included</span>
+                            <span class="font-semibold text-blue-600">{{ websites_included }}</span>
+                        </div>
+                        {% endif %}
+                        {% if expiry_date %}
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span class="text-gray-600">Valid Until</span>
+                            <span class="font-semibold text-gray-800">{{ expiry_date|date:"F j, Y" }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                            <span class="text-gray-600">Status</span>
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i>Active
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- What You Get -->
+            <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+                    <i class="fas fa-star text-yellow-500 mr-3"></i>
+                    What You Get with {{ plan_name|default:"Your Plan" }}
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                            <span>{{ websites_included|default:"Multiple" }} AI-generated websites per month</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                            <span>Access to advanced AI models</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                            <span>Premium templates and themes</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                            <span>Priority customer support</span>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                            <span>Complete source code download</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                            <span>Mobile-responsive designs</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                            <span>SEO-optimized websites</span>
+                        </div>
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-600 mr-3"></i>
+                            <span>No watermarks or branding</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center mb-8">
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'generator:generate' %}" 
+                       class="bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-4 rounded-xl font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                        <i class="fas fa-rocket mr-2"></i>
+                        Create Your First Website
+                    </a>
+                    <a href="{% url 'generator:dashboard' %}" 
+                       class="bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-tachometer-alt mr-2"></i>
+                        Go to Dashboard
+                    </a>
+                    <a href="{% url 'generator:subscription_management' %}" 
+                       class="bg-gray-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-gray-700 transition-colors">
+                        <i class="fas fa-cog mr-2"></i>
+                        Manage Subscription
+                    </a>
+                </div>
+            </div>
+        
+        {% else %}
+            <!-- Error State -->
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-red-100 rounded-full mb-6">
+                    <i class="fas fa-exclamation-triangle text-4xl text-red-600"></i>
+                </div>
+                <h1 class="text-4xl font-bold text-gray-800 mb-4">Payment Issue</h1>
+                <p class="text-xl text-gray-600 mb-8">
+                    {{ error|default:"We couldn't process your payment. Please contact support for assistance." }}
+                </p>
+            </div>
+
+            <div class="bg-red-50 border border-red-200 rounded-2xl p-8 mb-8">
+                <h2 class="text-xl font-bold text-red-800 mb-4">What should you do?</h2>
+                <ul class="text-red-700 space-y-2">
+                    <li class="flex items-center">
+                        <i class="fas fa-phone text-red-600 mr-3"></i>
+                        Call our support team at <strong>9021100337</strong>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-envelope text-red-600 mr-3"></i>
+                        Email us with your transaction details
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-redo text-red-600 mr-3"></i>
+                        Try making the payment again
+                    </li>
+                </ul>
+            </div>
+
+            <div class="text-center">
+                <div class="space-x-4">
+                    <a href="{% url 'generator:pricing' %}" 
+                       class="bg-blue-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+                        Try Again
+                    </a>
+                    <a href="{% url 'generator:contact_us' %}" 
+                       class="bg-gray-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-gray-700 transition-colors">
+                        Contact Support
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Support Section -->
+        <div class="bg-gray-50 rounded-2xl p-8 text-center">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-headset text-blue-600 mr-2"></i>
+                Need Help Getting Started?
+            </h3>
+            <p class="text-gray-600 mb-6">Our support team is here to help you make the most of your subscription.</p>
+            
+            <div class="grid md:grid-cols-3 gap-4">
+                <a href="{% url 'generator:help_center' %}" 
+                   class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-200">
+                    <i class="fas fa-question-circle text-blue-600 text-2xl mb-2"></i>
+                    <div class="font-semibold text-gray-800">Help Center</div>
+                    <div class="text-sm text-gray-600">Browse our guides</div>
+                </a>
+                
+                <a href="tel:9021100337" 
+                   class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-200">
+                    <i class="fas fa-phone text-green-600 text-2xl mb-2"></i>
+                    <div class="font-semibold text-gray-800">Call Support</div>
+                    <div class="text-sm text-gray-600">9021100337</div>
+                </a>
+                
+                <a href="{% url 'generator:faq' %}" 
+                   class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-200">
+                    <i class="fas fa-info-circle text-purple-600 text-2xl mb-2"></i>
+                    <div class="font-semibold text-gray-800">FAQ</div>
+                    <div class="text-sm text-gray-600">Quick answers</div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.animate-check {
+    animation: checkmark 0.8s ease-in-out;
+}
+
+@keyframes checkmark {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate the success icon
+    const checkIcon = document.querySelector('.fa-check');
+    if (checkIcon) {
+        checkIcon.classList.add('animate-check');
+    }
+    
+    // Auto-hide success messages after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(alert => {
+            alert.style.transition = 'opacity 0.5s ease';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 5000);
+});
+</script>
+{% endblock %}

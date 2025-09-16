@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-lightbulb text-yellow-500 mr-3"></i>
+                Suggestion Box
+            </h1>
+            <p class="text-xl text-gray-600">Help us make AI Website Generator even better</p>
+        </div>
+
+        <!-- Suggestion Form -->
+        <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-6">Submit Your Suggestion</h2>
+            
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Your Name *</label>
+                        <input type="text" id="name" name="name" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               {% if user.is_authenticated %}value="{{ user.get_full_name|default:user.username }}"{% endif %}>
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" id="email" name="email" required
+                               class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                               {% if user.is_authenticated %}value="{{ user.email }}"{% endif %}>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="suggestion_type" class="block text-sm font-medium text-gray-700 mb-2">Suggestion Type *</label>
+                        <select id="suggestion_type" name="suggestion_type" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select type...</option>
+                            <option value="feature">New Feature</option>
+                            <option value="improvement">Improvement</option>
+                            <option value="bug">Bug Report</option>
+                            <option value="ui_ux">UI/UX Enhancement</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="priority" class="block text-sm font-medium text-gray-700 mb-2">Priority Level</label>
+                        <select id="priority" name="priority"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Suggestion Title *</label>
+                    <input type="text" id="title" name="title" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                           placeholder="Brief title of your suggestion">
+                </div>
+
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Detailed Description *</label>
+                    <textarea id="description" name="description" rows="6" required
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                              placeholder="Please provide a detailed description of your suggestion..."></textarea>
+                </div>
+
+                <div class="flex justify-end">
+                    <button type="submit" 
+                            class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Submit Suggestion
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Recent Implemented Suggestions -->
+        {% if implemented_suggestions %}
+        <div class="bg-green-50 border border-green-200 rounded-lg p-6">
+            <h3 class="text-xl font-semibold text-green-800 mb-4">
+                <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                Recently Implemented Suggestions
+            </h3>
+            <div class="space-y-3">
+                {% for suggestion in implemented_suggestions %}
+                <div class="bg-white rounded-lg p-4 border border-green-200">
+                    <h4 class="font-medium text-gray-800">{{ suggestion.title }}</h4>
+                    <p class="text-sm text-gray-600 mt-1">{{ suggestion.description|truncatewords:20 }}</p>
+                    <p class="text-xs text-green-600 mt-2">
+                        <i class="fas fa-user mr-1"></i>{{ suggestion.name }} • 
+                        <i class="fas fa-calendar mr-1"></i>{{ suggestion.updated_at|date:"M d, Y" }}
+                    </p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Guidelines -->
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-blue-800 mb-3">
+                <i class="fas fa-info-circle text-blue-600 mr-2"></i>
+                Suggestion Guidelines
+            </h3>
+            <ul class="text-sm text-blue-700 space-y-2">
+                <li>• Be specific and clear in your description</li>
+                <li>• Explain how the suggestion would improve the platform</li>
+                <li>• Include any relevant use cases or examples</li>
+                <li>• Check our FAQ to see if the feature already exists</li>
+                <li>• We review all suggestions within 48 hours</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

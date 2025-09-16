@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI Website Generator{% endblock %}</title>
+
+    <!-- CSS -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#667eea',
+                        secondary: '#764ba2',
+                        accent: '#f093fb'
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <a href="{% url 'generator:home' %}">
+                    <i class="fas fa-robot"></i>
+                    <span>AI WebGen</span>
+                </a>
+            </div>
+
+            <div class="nav-menu" id="nav-menu">
+                {% if user.is_authenticated %}
+                <a href="{% url 'generator:dashboard' %}" class="nav-link">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="{% url 'generator:generate' %}" class="nav-link">
+                    <i class="fas fa-plus-circle"></i> Generate
+                </a>
+                <div class="nav-user-menu">
+                    <span class="nav-username">{{ user.username }}</span>
+                    <div class="user-dropdown">
+                        <a href="{% url 'auth:profile' %}">Profile</a>
+                        <a href="{% url 'auth:logout' %}">Logout</a>
+                    </div>
+                </div>
+                {% else %}
+                <a href="{% url 'auth:login' %}" class="nav-link">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="{% url 'auth:register' %}" class="nav-link nav-cta">
+                    <i class="fas fa-user-plus"></i> Sign Up
+                </a>
+                {% endif %}
+            </div>
+
+            <div class="hamburger" id="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% if messages %}
+        <div class="messages-container">
+            {% for message in messages %}
+            <div class="message message-{{ message.tags }}">
+                <i class="fas fa-info-circle"></i>
+                <span>{{ message }}</span>
+                <button class="message-close">&times;</button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3><i class="fas fa-robot"></i> AI WebGen</h3>
+                    <p>Generate stunning websites with the power of AI</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <a href="{% url 'generator:home' %}">Home</a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'generator:dashboard' %}">Dashboard</a>
+                    <a href="{% url 'generator:generate' %}">Generate</a>
+                    {% endif %}
+                </div>
+                <div class="footer-section">
+                    <h4>Support</h4>
+                    <a href="{% url 'generator:help_center' %}">Help Center</a>
+                    <a href="{% url 'generator:suggestion' %}">Suggestions</a>
+                    <a href="{% url 'generator:faq' %}">FAQ</a>
+                    <a href="{% url 'generator:contact_us' %}">Contact Us</a>
+
+                    <a href="{% url 'generator:about_us' %}">About Us</a>
+
+
+
+
+
+
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 AI Website Generator. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Generating your website...</p>
+        </div>
+    </div>
+</body>
+
+</html>

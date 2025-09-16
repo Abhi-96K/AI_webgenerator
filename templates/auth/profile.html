@@ -1,0 +1,383 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <div class="container">
+        <div class="profile-header">
+            <h1><i class="fas fa-user-circle"></i> My Profile</h1>
+            <p>Manage your account settings and subscription</p>
+        </div>
+        
+        <div class="profile-grid">
+            <!-- Profile Information -->
+            <div class="profile-card">
+                <h2><i class="fas fa-user"></i> Profile Information</h2>
+                
+                <form method="post" class="profile-form">
+                    {% csrf_token %}
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input 
+                                type="text" 
+                                name="first_name" 
+                                id="first_name" 
+                                class="form-input" 
+                                value="{{ user.first_name }}"
+                                placeholder="Your first name"
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input 
+                                type="text" 
+                                name="last_name" 
+                                id="last_name" 
+                                class="form-input" 
+                                value="{{ user.last_name }}"
+                                placeholder="Your last name"
+                            >
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="username" class="form-label">Username</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            class="form-input" 
+                            value="{{ user.username }}"
+                            disabled
+                        >
+                        <small class="form-help">Username cannot be changed</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email Address</label>
+                        <input 
+                            type="email" 
+                            name="email" 
+                            id="email" 
+                            class="form-input" 
+                            value="{{ user.email }}"
+                            placeholder="your@email.com"
+                        >
+                        {% if profile.email_verified %}
+                            <small class="form-help verified"><i class="fas fa-check-circle"></i> Email verified</small>
+                        {% else %}
+                            <small class="form-help unverified"><i class="fas fa-exclamation-triangle"></i> Email not verified</small>
+                        {% endif %}
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Update Profile
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Account Statistics -->
+            <div class="profile-card">
+                <h2><i class="fas fa-chart-bar"></i> Account Statistics</h2>
+                
+                <div class="stats-list">
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>{{ profile.websites_generated }}</h3>
+                            <p>Websites Created</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-gift"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>{{ profile.free_websites_remaining }}</h3>
+                            <p>Free Websites Remaining</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>{{ user.date_joined|date:"M Y" }}</h3>
+                            <p>Member Since</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Subscription Information -->
+            <div class="profile-card">
+                <h2><i class="fas fa-crown"></i> Subscription Plan</h2>
+                
+                <div class="subscription-info">
+                    <div class="current-plan">
+                        <h3>{{ profile.get_subscription_plan_display }}</h3>
+                        {% if profile.subscription_plan == 'free' %}
+                            <p class="plan-description">2 free websites, then upgrade for more</p>
+                            <div class="plan-limits">
+                                <div class="limit-item">
+                                    <span class="limit-used">{{ profile.websites_generated }}</span>
+                                    <span class="limit-total">/ 2</span>
+                                    <span class="limit-label">websites used</span>
+                                </div>
+                            </div>
+                        {% else %}
+                            <p class="plan-description">Premium features enabled</p>
+                            {% if profile.subscription_expires %}
+                                <p class="plan-expiry">Expires: {{ profile.subscription_expires|date:"M d, Y" }}</p>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    
+                    {% if profile.subscription_plan == 'free' %}
+                        <div class="upgrade-section">
+                            <h4>Need more websites?</h4>
+                            <p>Upgrade to generate unlimited websites with premium features</p>
+                            <button class="btn-primary" disabled>
+                                <i class="fas fa-rocket"></i>
+                                Upgrade Plan (Coming Soon)
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Security Settings -->
+            <div class="profile-card">
+                <h2><i class="fas fa-shield-alt"></i> Security Settings</h2>
+                
+                <div class="security-items">
+                    <div class="security-item">
+                        <div class="security-content">
+                            <h4>Password</h4>
+                            <p>Last updated: Never</p>
+                        </div>
+                        <a href="{% url 'auth:password_reset' %}" class="btn-outline">
+                            <i class="fas fa-key"></i>
+                            Change Password
+                        </a>
+                    </div>
+                    
+                    <div class="security-item">
+                        <div class="security-content">
+                            <h4>Two-Factor Authentication</h4>
+                            <p>Not enabled</p>
+                        </div>
+                        <button class="btn-outline" disabled>
+                            <i class="fas fa-mobile-alt"></i>
+                            Enable 2FA (Coming Soon)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.profile-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
+.profile-header p {
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+.profile-grid {
+    display: grid;
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.profile-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border-color);
+}
+
+.profile-card h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.profile-card h2 i {
+    color: var(--primary-color);
+}
+
+.profile-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-help {
+    display: block;
+    margin-top: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--text-light);
+}
+
+.form-help.verified {
+    color: #28a745;
+}
+
+.form-help.unverified {
+    color: #dc3545;
+}
+
+.stats-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--bg-color);
+    border-radius: 10px;
+}
+
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 1.2rem;
+}
+
+.stat-content h3 {
+    font-size: 1.8rem;
+    margin: 0;
+    color: var(--text-color);
+}
+
+.stat-content p {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.subscription-info .current-plan {
+    background: var(--bg-color);
+    padding: 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.current-plan h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-color);
+}
+
+.plan-limits {
+    margin-top: 1rem;
+}
+
+.limit-item {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    font-size: 1.1rem;
+}
+
+.limit-used {
+    font-weight: 700;
+    color: var(--primary-color);
+    font-size: 1.3rem;
+}
+
+.limit-total {
+    color: var(--text-light);
+}
+
+.upgrade-section {
+    text-align: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    border-radius: 10px;
+}
+
+.upgrade-section h4 {
+    margin-bottom: 0.5rem;
+}
+
+.upgrade-section p {
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+.security-items {
+    display: grid;
+    gap: 1rem;
+}
+
+.security-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--bg-color);
+    border-radius: 10px;
+}
+
+.security-content h4 {
+    margin: 0 0 0.25rem;
+    color: var(--text-color);
+}
+
+.security-content p {
+    margin: 0;
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .profile-form .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .security-item {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+}
+</style>
+{% endblock %}

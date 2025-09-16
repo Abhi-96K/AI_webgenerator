@@ -1,0 +1,406 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Subscription Plans - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header Section -->
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-gray-800 mb-6">
+                <i class="fas fa-rocket text-blue-600 mr-3"></i>
+                Choose Your Perfect Plan
+            </h1>
+            <p class="text-xl text-gray-600 mb-4">
+                Create unlimited AI-powered websites with our flexible subscription plans
+            </p>
+            
+            {% if user.is_authenticated %}
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-2xl mx-auto mb-8">
+                    <div class="flex items-center justify-center space-x-4">
+                        <div class="text-center">
+                            <span class="text-sm text-blue-600 font-medium">Current Plan</span>
+                            <div class="text-lg font-bold text-blue-800 capitalize">{{ current_plan|default:"Free" }}</div>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-sm text-blue-600 font-medium">Websites Remaining</span>
+                            <div class="text-lg font-bold text-blue-800">{{ websites_remaining }}</div>
+                        </div>
+                        {% if subscription_active %}
+                        <div class="text-center">
+                            <span class="text-sm text-blue-600 font-medium">Status</span>
+                            <div class="text-lg font-bold text-green-600">Active</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 max-w-2xl mx-auto mb-8">
+                    <p class="text-yellow-800">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <a href="{% url 'auth:register' %}" class="font-medium hover:underline">Sign up for free</a> to get 2 websites at no cost, then upgrade when you need more!
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Pricing Toggle (Monthly/Yearly) -->
+        <div class="flex justify-center mb-8">
+            <div class="bg-gray-100 p-1 rounded-lg">
+                <button id="monthlyBtn" class="px-4 py-2 rounded-md bg-blue-600 text-white font-medium transition-colors">
+                    Monthly
+                </button>
+                <button id="yearlyBtn" class="px-4 py-2 rounded-md text-gray-600 font-medium hover:text-gray-800 transition-colors">
+                    Yearly (Save 20%)
+                </button>
+            </div>
+        </div>
+
+        <!-- Pricing Cards -->
+        <div class="grid md:grid-cols-4 gap-8 mb-12">
+            <!-- Free Plan -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 border-2 border-gray-200 relative">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Free</h3>
+                    <div class="text-4xl font-bold text-gray-800 mb-2">₹0</div>
+                    <p class="text-gray-600">forever</p>
+                </div>
+                
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3 text-lg"></i>
+                        <span class="text-gray-700">2 free AI websites</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3 text-lg"></i>
+                        <span class="text-gray-700">Basic AI models</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3 text-lg"></i>
+                        <span class="text-gray-700">HTML/CSS/JS download</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3 text-lg"></i>
+                        <span class="text-gray-700">Community support</span>
+                    </li>
+                </ul>
+                
+                {% if user.is_authenticated and current_plan == 'free' %}
+                    <button class="w-full bg-gray-400 text-white py-3 rounded-xl font-semibold cursor-not-allowed">
+                        Current Plan
+                    </button>
+                {% else %}
+                    <a href="{% url 'auth:register' %}" class="block w-full bg-gray-600 text-white py-3 rounded-xl font-semibold text-center hover:bg-gray-700 transition-colors">
+                        Get Started Free
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Basic Plan -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 border-2 border-blue-200 relative">
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Basic</h3>
+                    <div class="monthly-price">
+                        <div class="text-4xl font-bold text-blue-600 mb-2">₹{{ plans.basic.price }}</div>
+                        <p class="text-gray-600">per month</p>
+                    </div>
+                    <div class="yearly-price hidden">
+                        <div class="text-4xl font-bold text-blue-600 mb-2">₹{% widthratio plans.basic.price 1 0.8 %}</div>
+                        <p class="text-gray-600">per month</p>
+                        <p class="text-sm text-green-600">₹{% widthratio plans.basic.price 12 9.6 %} billed yearly</p>
+                    </div>
+                </div>
+                
+                <ul class="space-y-4 mb-8">
+                    {% for feature in plans.basic.features %}
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3 text-lg"></i>
+                        <span class="text-gray-700">{{ feature }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+                {% if user.is_authenticated %}
+                    {% if current_plan == 'basic' %}
+                        <button class="w-full bg-gray-400 text-white py-3 rounded-xl font-semibold cursor-not-allowed">
+                            Current Plan
+                        </button>
+                    {% else %}
+                        <a href="{% url 'generator:payment_page' 'basic' %}" class="block w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-center hover:bg-blue-700 transition-colors">
+                            Choose Basic
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'auth:login' %}?next={% url 'generator:payment_page' 'basic' %}" class="block w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-center hover:bg-blue-700 transition-colors">
+                        Choose Basic
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="bg-white rounded-2xl shadow-xl p-8 border-2 border-purple-200 relative transform scale-105">
+                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span class="bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+                        ⭐ MOST POPULAR
+                    </span>
+                </div>
+                
+                <div class="text-center mb-8 mt-4">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Premium</h3>
+                    <div class="monthly-price">
+                        <div class="text-4xl font-bold text-purple-600 mb-2">₹{{ plans.premium.price }}</div>
+                        <p class="text-gray-600">per month</p>
+                    </div>
+                    <div class="yearly-price hidden">
+                        <div class="text-4xl font-bold text-purple-600 mb-2">₹{% widthratio plans.premium.price 1 0.8 %}</div>
+                        <p class="text-gray-600">per month</p>
+                        <p class="text-sm text-green-600">₹{% widthratio plans.premium.price 12 9.6 %} billed yearly</p>
+                    </div>
+                </div>
+                
+                <ul class="space-y-4 mb-8">
+                    {% for feature in plans.premium.features %}
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3 text-lg"></i>
+                        <span class="text-gray-700">{{ feature }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+                {% if user.is_authenticated %}
+                    {% if current_plan == 'premium' %}
+                        <button class="w-full bg-gray-400 text-white py-3 rounded-xl font-semibold cursor-not-allowed">
+                            Current Plan
+                        </button>
+                    {% else %}
+                        <a href="{% url 'generator:payment_page' 'premium' %}" class="block w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl font-semibold text-center hover:from-purple-700 hover:to-purple-800 transition-colors shadow-lg">
+                            Choose Premium
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'auth:login' %}?next={% url 'generator:payment_page' 'premium' %}" class="block w-full bg-gradient-to-r from-purple-600 to-purple-700 text-white py-3 rounded-xl font-semibold text-center hover:from-purple-700 hover:to-purple-800 transition-colors shadow-lg">
+                        Choose Premium
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 border-2 border-yellow-200 relative">
+                <div class="absolute top-4 right-4">
+                    <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        ENTERPRISE
+                    </span>
+                </div>
+                
+                <div class="text-center mb-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Enterprise</h3>
+                    <div class="monthly-price">
+                        <div class="text-4xl font-bold text-yellow-600 mb-2">₹{{ plans.enterprise.price }}</div>
+                        <p class="text-gray-600">per month</p>
+                    </div>
+                    <div class="yearly-price hidden">
+                        <div class="text-4xl font-bold text-yellow-600 mb-2">₹{% widthratio plans.enterprise.price 1 0.8 %}</div>
+                        <p class="text-gray-600">per month</p>
+                        <p class="text-sm text-green-600">₹{% widthratio plans.enterprise.price 12 9.6 %} billed yearly</p>
+                    </div>
+                </div>
+                
+                <ul class="space-y-4 mb-8">
+                    {% for feature in plans.enterprise.features %}
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-500 mr-3 text-lg"></i>
+                        <span class="text-gray-700">{{ feature }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+                {% if user.is_authenticated %}
+                    {% if current_plan == 'enterprise' %}
+                        <button class="w-full bg-gray-400 text-white py-3 rounded-xl font-semibold cursor-not-allowed">
+                            Current Plan
+                        </button>
+                    {% else %}
+                        <a href="{% url 'generator:payment_page' 'enterprise' %}" class="block w-full bg-yellow-600 text-white py-3 rounded-xl font-semibold text-center hover:bg-yellow-700 transition-colors">
+                            Choose Enterprise
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <a href="{% url 'auth:login' %}?next={% url 'generator:payment_page' 'enterprise' %}" class="block w-full bg-yellow-600 text-white py-3 rounded-xl font-semibold text-center hover:bg-yellow-700 transition-colors">
+                        Choose Enterprise
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Feature Comparison Table -->
+        <div class="bg-white rounded-2xl shadow-lg p-8 mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">
+                <i class="fas fa-chart-bar text-blue-600 mr-3"></i>
+                Compare All Features
+            </h2>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b-2 border-gray-200">
+                            <th class="text-left py-4 px-4 font-bold text-gray-800">Feature</th>
+                            <th class="text-center py-4 px-4 font-bold text-gray-600">Free</th>
+                            <th class="text-center py-4 px-4 font-bold text-blue-600">Basic</th>
+                            <th class="text-center py-4 px-4 font-bold text-purple-600">Premium</th>
+                            <th class="text-center py-4 px-4 font-bold text-yellow-600">Enterprise</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-sm">
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-4 font-medium">Websites per month</td>
+                            <td class="text-center py-4 px-4">2</td>
+                            <td class="text-center py-4 px-4">{{ plans.basic.websites }}</td>
+                            <td class="text-center py-4 px-4">{{ plans.premium.websites }}</td>
+                            <td class="text-center py-4 px-4">{{ plans.enterprise.websites }}</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-4 font-medium">AI Models</td>
+                            <td class="text-center py-4 px-4">Basic</td>
+                            <td class="text-center py-4 px-4">Advanced</td>
+                            <td class="text-center py-4 px-4">All Models</td>
+                            <td class="text-center py-4 px-4">All + Beta</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-4 font-medium">Templates</td>
+                            <td class="text-center py-4 px-4">Basic</td>
+                            <td class="text-center py-4 px-4">Premium</td>
+                            <td class="text-center py-4 px-4">All Templates</td>
+                            <td class="text-center py-4 px-4">All + Custom</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-4 font-medium">Support</td>
+                            <td class="text-center py-4 px-4">Community</td>
+                            <td class="text-center py-4 px-4">Email</td>
+                            <td class="text-center py-4 px-4">Priority</td>
+                            <td class="text-center py-4 px-4">24/7 Dedicated</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-4 font-medium">API Access</td>
+                            <td class="text-center py-4 px-4">❌</td>
+                            <td class="text-center py-4 px-4">❌</td>
+                            <td class="text-center py-4 px-4">✅</td>
+                            <td class="text-center py-4 px-4">✅</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-4 font-medium">Custom Domains</td>
+                            <td class="text-center py-4 px-4">❌</td>
+                            <td class="text-center py-4 px-4">❌</td>
+                            <td class="text-center py-4 px-4">✅</td>
+                            <td class="text-center py-4 px-4">✅</td>
+                        </tr>
+                        <tr class="border-b border-gray-100">
+                            <td class="py-4 px-4 font-medium">White Label</td>
+                            <td class="text-center py-4 px-4">❌</td>
+                            <td class="text-center py-4 px-4">❌</td>
+                            <td class="text-center py-4 px-4">❌</td>
+                            <td class="text-center py-4 px-4">✅</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="bg-gray-50 rounded-2xl p-8 mb-12">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">
+                <i class="fas fa-question-circle text-green-600 mr-3"></i>
+                Frequently Asked Questions
+            </h2>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-2">Can I change plans anytime?</h3>
+                        <p class="text-gray-600">Yes! You can upgrade or downgrade your plan at any time. Changes take effect immediately.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-2">What happens to unused websites?</h3>
+                        <p class="text-gray-600">Unused websites don't roll over to the next month. Each plan resets monthly.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-2">Do you offer refunds?</h3>
+                        <p class="text-gray-600">Yes, we offer a 7-day money-back guarantee on all paid plans.</p>
+                    </div>
+                </div>
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-2">What payment methods do you accept?</h3>
+                        <p class="text-gray-600">We accept UPI, credit/debit cards, net banking, and digital wallets.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-2">Can I cancel anytime?</h3>
+                        <p class="text-gray-600">Yes, you can cancel your subscription anytime. You'll retain access until the end of your billing period.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800 mb-2">Do you offer enterprise solutions?</h3>
+                        <p class="text-gray-600">Yes! Contact our sales team for custom enterprise solutions and volume discounts.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="text-center bg-gradient-to-r from-blue-600 to-purple-700 text-white rounded-2xl p-8">
+            <h2 class="text-3xl font-bold mb-4">Ready to Create Amazing Websites?</h2>
+            <p class="text-xl mb-6 opacity-90">Join thousands of users who are already building their dream websites with AI</p>
+            
+            {% if not user.is_authenticated %}
+                <div class="space-x-4">
+                    <a href="{% url 'auth:register' %}" class="bg-white text-blue-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
+                        Start Free Trial
+                    </a>
+                    <a href="{% url 'generator:payment_page' 'premium' %}" class="bg-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors">
+                        Go Premium
+                    </a>
+                </div>
+            {% else %}
+                <div class="space-x-4">
+                    <a href="{% url 'generator:generate' %}" class="bg-white text-blue-600 px-8 py-3 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
+                        Generate Website
+                    </a>
+                    {% if current_plan == 'free' %}
+                        <a href="{% url 'generator:payment_page' 'premium' %}" class="bg-purple-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-purple-700 transition-colors">
+                            Upgrade to Premium
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const monthlyBtn = document.getElementById('monthlyBtn');
+    const yearlyBtn = document.getElementById('yearlyBtn');
+    const monthlyPrices = document.querySelectorAll('.monthly-price');
+    const yearlyPrices = document.querySelectorAll('.yearly-price');
+
+    monthlyBtn.addEventListener('click', function() {
+        monthlyBtn.classList.add('bg-blue-600', 'text-white');
+        monthlyBtn.classList.remove('text-gray-600');
+        yearlyBtn.classList.remove('bg-blue-600', 'text-white');
+        yearlyBtn.classList.add('text-gray-600');
+        
+        monthlyPrices.forEach(price => price.classList.remove('hidden'));
+        yearlyPrices.forEach(price => price.classList.add('hidden'));
+    });
+
+    yearlyBtn.addEventListener('click', function() {
+        yearlyBtn.classList.add('bg-blue-600', 'text-white');
+        yearlyBtn.classList.remove('text-gray-600');
+        monthlyBtn.classList.remove('bg-blue-600', 'text-white');
+        monthlyBtn.classList.add('text-gray-600');
+        
+        monthlyPrices.forEach(price => price.classList.add('hidden'));
+        yearlyPrices.forEach(price => price.classList.remove('hidden'));
+    });
+});
+</script>
+{% endblock %}

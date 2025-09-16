@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ page_title }} - AI Website Generator{% endblock %}
+
+{% block content %}
+<div class="hero" style="padding: 4rem 0; background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));">
+    <div class="hero-content">
+        <h1 style="color: white; font-size: 3rem; margin-bottom: 1rem;">
+            <i class="fas fa-tag" style="color: var(--accent-color); margin-right: 1rem;"></i>
+            Choose Your Perfect Plan
+        </h1>
+        <p style="color: rgba(255,255,255,0.9); font-size: 1.25rem;">Start free, upgrade when you need more</p>
+    </div>
+</div>
+
+<section class="container" style="padding: 4rem 2rem;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+
+        <div class="pricing-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+            <!-- Free Plan -->
+            <div class="pricing-card" style="background: var(--white); border-radius: 15px; box-shadow: var(--shadow); padding: 2rem; border: 2px solid var(--border-color); text-align: center; position: relative; transition: var(--transition);">
+                <div style="margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.75rem; font-weight: 700; color: var(--text-color); margin-bottom: 1rem;">Free</h3>
+                    <div style="font-size: 3rem; font-weight: 700; color: var(--text-color); margin-bottom: 0.5rem;">₹0</div>
+                    <p style="color: var(--text-light); font-size: 1rem;">forever</p>
+                </div>
+                <ul style="list-style: none; padding: 0; margin: 0 0 2rem 0; text-align: left;">
+                    <li style="display: flex; align-items: center; margin-bottom: 0.75rem; font-size: 0.95rem;">
+                        <i class="fas fa-check" style="color: #10b981; margin-right: 0.75rem; font-size: 1.1rem;"></i>
+                        <span>2 free AI websites</span>
+                    </li>
+                    <li style="display: flex; align-items: center; margin-bottom: 0.75rem; font-size: 0.95rem;">
+                        <i class="fas fa-check" style="color: #10b981; margin-right: 0.75rem; font-size: 1.1rem;"></i>
+                        <span>Basic AI models</span>
+                    </li>
+                    <li style="display: flex; align-items: center; margin-bottom: 0.75rem; font-size: 0.95rem;">
+                        <i class="fas fa-check" style="color: #10b981; margin-right: 0.75rem; font-size: 1.1rem;"></i>
+                        <span>HTML/CSS/JS download</span>
+                    </li>
+                    <li style="display: flex; align-items: center; margin-bottom: 0.75rem; font-size: 0.95rem;">
+                        <i class="fas fa-check" style="color: #10b981; margin-right: 0.75rem; font-size: 1.1rem;"></i>
+                        <span>Community support</span>
+                    </li>
+                </ul>
+                {% if user.is_authenticated and current_plan == 'free' %}
+                    <button class="pricing-btn" style="width: 100%; padding: 1rem 2rem; background: var(--border-color); color: var(--text-light); border: none; border-radius: 10px; font-weight: 600; cursor: not-allowed;">
+                        Current Plan
+                    </button>
+                {% else %}
+                    <a href="{% url 'auth:register' %}" class="pricing-btn" style="display: block; width: 100%; padding: 1rem 2rem; background: linear-gradient(135deg, #6b7280, #9ca3af); color: var(--white); text-decoration: none; border-radius: 10px; font-weight: 600; text-align: center; transition: var(--transition);">
+                        Get Started Free
+                    </a>
+                {% endif %}
+            </div>
+
+            <!-- Basic Plan -->
+            <div class="bg-white rounded-lg shadow-md p-6 border-2 border-blue-200">
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Basic</h3>
+                    <div class="text-3xl font-bold text-blue-600">₹{{ plans.basic.price }}</div>
+                    <p class="text-gray-600">per month</p>
+                </div>
+                <ul class="space-y-3 mb-8">
+                    {% for feature in plans.basic.features %}
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-600 mr-3"></i>
+                        <span>{{ feature }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'generator:payment_page' 'basic' %}" 
+                   class="block w-full bg-blue-600 text-white py-3 rounded-lg font-medium text-center hover:bg-blue-700 transition-colors">
+                    Choose Basic
+                </a>
+            </div>
+
+            <!-- Premium Plan -->
+            <div class="bg-white rounded-lg shadow-md p-6 border-2 border-purple-200 relative">
+                <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                    <span class="bg-purple-600 text-white px-4 py-1 rounded-full text-sm font-medium">
+                        Most Popular
+                    </span>
+                </div>
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Premium</h3>
+                    <div class="text-3xl font-bold text-purple-600">₹{{ plans.premium.price }}</div>
+                    <p class="text-gray-600">per month</p>
+                </div>
+                <ul class="space-y-3 mb-8">
+                    {% for feature in plans.premium.features %}
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-600 mr-3"></i>
+                        <span>{{ feature }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'generator:payment_page' 'premium' %}" 
+                   class="block w-full bg-purple-600 text-white py-3 rounded-lg font-medium text-center hover:bg-purple-700 transition-colors">
+                    Choose Premium
+                </a>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="bg-white rounded-lg shadow-md p-6 border-2 border-gold-200">
+                <div class="text-center mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-2">Enterprise</h3>
+                    <div class="text-3xl font-bold text-yellow-600">₹{{ plans.enterprise.price }}</div>
+                    <p class="text-gray-600">per month</p>
+                </div>
+                <ul class="space-y-3 mb-8">
+                    {% for feature in plans.enterprise.features %}
+                    <li class="flex items-center">
+                        <i class="fas fa-check text-green-600 mr-3"></i>
+                        <span>{{ feature }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'generator:payment_page' 'enterprise' %}" 
+                   class="block w-full bg-yellow-600 text-white py-3 rounded-lg font-medium text-center hover:bg-yellow-700 transition-colors">
+                    Choose Enterprise
+                </a>
+            </div>
+        </div>
+
+        <!-- Features Comparison -->
+        <div class="bg-white rounded-lg shadow-md p-8 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Feature Comparison</h2>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b">
+                            <th class="text-left py-3 px-4">Feature</th>
+                            <th class="text-center py-3 px-4">Free</th>
+                            <th class="text-center py-3 px-4">Basic</th>
+                            <th class="text-center py-3 px-4">Premium</th>
+                            <th class="text-center py-3 px-4">Enterprise</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="py-3 px-4">Websites per month</td>
+                            <td class="text-center py-3 px-4">2</td>
+                            <td class="text-center py-3 px-4">10</td>
+                            <td class="text-center py-3 px-4">30</td>
+                            <td class="text-center py-3 px-4">Unlimited</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-3 px-4">AI Models</td>
+                            <td class="text-center py-3 px-4">Basic</td>
+                            <td class="text-center py-3 px-4">Advanced</td>
+                            <td class="text-center py-3 px-4">Premium</td>
+                            <td class="text-center py-3 px-4">All Models</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-3 px-4">Support</td>
+                            <td class="text-center py-3 px-4">Email</td>
+                            <td class="text-center py-3 px-4">Priority</td>
+                            <td class="text-center py-3 px-4">24/7</td>
+                            <td class="text-center py-3 px-4">Dedicated</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="py-3 px-4">API Access</td>
+                            <td class="text-center py-3 px-4">✗</td>
+                            <td class="text-center py-3 px-4">✗</td>
+                            <td class="text-center py-3 px-4">✓</td>
+                            <td class="text-center py-3 px-4">✓</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="text-center">
+            <p class="text-gray-600 mb-4">Have questions about our pricing?</p>
+            <a href="{% url 'generator:faq' %}" class="text-blue-600 hover:underline font-medium">
+                Check our FAQ →
+            </a>
+        </div>
+    </div>
+</section>
+</div>
+
+<style>
+.pricing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.pricing-card.popular {
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+    position: relative;
+}
+
+.pricing-card.popular::before {
+    content: "⭐ MOST POPULAR";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.pricing-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.pricing-grid {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .pricing-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .pricing-card.popular {
+        transform: none;
+    }
+    
+    .hero h1 {
+        font-size: 2rem !important;
+    }
+    
+    .hero p {
+        font-size: 1rem !important;
+    }
+}
+</style>
+{% endblock %}
